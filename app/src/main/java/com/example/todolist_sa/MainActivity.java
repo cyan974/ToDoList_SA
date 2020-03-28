@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.provider.BaseColumns;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,14 +18,15 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.todolist_sa.db.TaskContract;
-import com.example.todolist_sa.db.TaskDbHelper;
+import com.example.todolist_sa.sqlite.TaskContract;
+import com.example.todolist_sa.sqlite.DatabaseHelper;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
-    private TaskDbHelper mHelper;
+    private DatabaseHelper mHelper;
     private ListView mTaskListView;
     private ArrayAdapter<String> mAdapter;
 
@@ -33,15 +35,47 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mHelper = new TaskDbHelper(this);
-        mTaskListView = (ListView) findViewById(R.id.list_todo);
+        // Informations de la table sur la bdd
+        mHelper = new DatabaseHelper(this);
         SQLiteDatabase db = mHelper.getReadableDatabase();
-        Cursor cursor = db.query(TaskContract.TaskEntry.TABLE,
-                new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE},
-                null, null, null, null, null);
+
+        // Définir une projection qui précise quelles colonnes de la base de données
+        // que vous utiliserez effectivement après cette requête.
+        String[] projection = {
+                BaseColumns._ID,
+                TaskContract.TaskEntry.COL_TASK_TITLE,
+                TaskContract.TaskEntry.COL_TASK_DATEFIN,
+                TaskContract.TaskEntry.COL_TASK_IMG
+        };
+
+        // Filtrer les résultats WHERE "title" = "My Title" (mon titre)
+        String selection = TaskContract.TaskEntry.COL_TASK_TITLE;
+        //String[] selectionArgs = { "My Title" };
+
+        // Comment vous voulez que les résultats soient triés dans le Curseur résultant
+        String sortOrder =
+                TaskContract.TaskEntry.COL_TASK_DATEFIN + " DESC";
+
+        Cursor cursor = db.query(
+                TaskContract.TaskEntry.TABLE_NAME,
+                projection,
+                selection,
+                null,
+                null,
+                null,
+                sortOrder,
+                null
+        );
+
+        mTaskListView = findViewById(R.id.list_todo);
+        List itemIds = new ArrayList<>();
         while(cursor.moveToNext()) {
             int idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE);
             Log.d(TAG, "Tâche: " + cursor.getString(idx));
+
+            long itemId = cursor.getLong(
+                    cursor.getColumnIndexOrThrow(TaskContract.TaskEntry._ID));
+            itemIds.add(itemId);
         }
         cursor.close();
         db.close();
@@ -69,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                                 SQLiteDatabase db = mHelper.getWritableDatabase();
                                 ContentValues values = new ContentValues();
                                 values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
-                                db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
+                                db.insertWithOnConflict(TaskContract.TaskEntry.TABLE_NAME,
                                         null,
                                         values,
                                         SQLiteDatabase.CONFLICT_REPLACE);
@@ -90,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
     private void updateUI() {
         ArrayList<String> taskList = new ArrayList<>();
         SQLiteDatabase db = mHelper.getReadableDatabase();
-        Cursor cursor = db.query(TaskContract.TaskEntry.TABLE,
+        Cursor cursor = db.query(TaskContract.TaskEntry.TABLE_NAME,
                 new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE},
                 null, null, null, null, null);
         while (cursor.moveToNext()) {
@@ -119,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
         TextView taskTextView = (TextView) parent.findViewById(R.id.task_title);
         String task = String.valueOf(taskTextView.getText());
         SQLiteDatabase db = mHelper.getWritableDatabase();
-        db.delete(TaskContract.TaskEntry.TABLE,
+        db.delete(TaskContract.TaskEntry.TABLE_NAME,
                 TaskContract.TaskEntry.COL_TASK_TITLE + " = ?",
                 new String[]{task});
         db.close();
