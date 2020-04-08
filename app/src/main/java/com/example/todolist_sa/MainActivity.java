@@ -32,8 +32,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Mettre avant le onCreate
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         // Informations de la table sur la bdd
         mHelper = new DatabaseHelper(this);
@@ -91,34 +94,38 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add_task:
-                final EditText taskEditText = new EditText(this);
-                AlertDialog dialog = new AlertDialog.Builder(this)
-                        .setTitle("Ajouter une nouvelle tâche")
-                        .setMessage("Que veux-tu faire après?")
-                        .setView(taskEditText)
-                        .setPositiveButton("Ajouter", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                String task = String.valueOf(taskEditText.getText());
-                                SQLiteDatabase db = mHelper.getWritableDatabase();
-                                ContentValues values = new ContentValues();
-                                values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
-                                db.insertWithOnConflict(TaskContract.TaskEntry.TABLE_NAME,
-                                        null,
-                                        values,
-                                        SQLiteDatabase.CONFLICT_REPLACE);
-                                db.close();
-                                updateUI();
-                            }
-                        })
-                        .setNegativeButton("Annuler", null)
-                        .create();
-                dialog.show();
+                //addTask();
                 return true;
 
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void addTask(View view){
+        final EditText taskEditText = new EditText(this);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Ajouter une nouvelle tâche")
+                .setMessage("Que veux-tu faire après?")
+                .setView(taskEditText)
+                .setPositiveButton("Ajouter", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String task = String.valueOf(taskEditText.getText());
+                        SQLiteDatabase db = mHelper.getWritableDatabase();
+                        ContentValues values = new ContentValues();
+                        values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
+                        db.insertWithOnConflict(TaskContract.TaskEntry.TABLE_NAME,
+                                null,
+                                values,
+                                SQLiteDatabase.CONFLICT_REPLACE);
+                        db.close();
+                        updateUI();
+                    }
+                })
+                .setNegativeButton("Annuler", null)
+                .create();
+        dialog.show();
     }
 
     private void updateUI() {
