@@ -22,6 +22,7 @@
         android:clickable="true"
         android:onClick="addTask"
         app:backgroundTint="@color/colorPrimary"
-        app:srcCompat="@drawable/ic_add_task" />
+        app:srcCompat="@drawable/ic_add_task"
+        android:focusable="true" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout >

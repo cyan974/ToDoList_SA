@@ -2,9 +2,9 @@
 <resources>
     <!-- #008577 -->
     <color name="colorPrimary">#38b6ff</color>
-    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorPrimaryDark">#38b6ff</color>
     <color name="colorAccent">#D81B60</color>
     <color name="colorBlack">#000000</color>
-    <color name="colorBlue">#38b6ff</color>
+    <color name="colorBlue">#004aad</color>
     <color name="colorWhite">#ffffff</color>
 </resources>
