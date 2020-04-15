@@ -8,7 +8,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.todolist_sa.DTO.ToDo;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -21,17 +23,17 @@ public class DbHelper extends SQLiteOpenHelper {
     // Création de la requête SQL pour créer la table TASKS
     private static final String CREATE_ToDo =
             "CREATE TABLE " + Const.ToDoEntry.TABLE_NAME + " (" +
-                    Const.ToDoEntry._ID + " INTEGER PRIMARY KEY," +
+                    Const.ToDoEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     Const.ToDoEntry.COL_TITLE + " TEXT," +
-                    Const.ToDoEntry.COL_ENDDATE + " TEXT)";
-    // ," +
-    //                    Const.ToDoEntry.COL_TASK_IMG + " TEXT
+                    Const.ToDoEntry.COL_ENDDATE + " DATE," +
+                    Const.ToDoEntry.COL_IMG + " TEXT " + ")";
 
     // Création de la requête SQL pour créer la table TAGS
     private static final String CREATE_ToDoItem =
             "CREATE TABLE " + Const.ToDoItemEntry.TABLE_NAME + " (" +
-                    Const.ToDoItemEntry._ID + " INTEGER PRIMARY KEY," +
+                    Const.ToDoItemEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     Const.ToDoItemEntry.COL_NAME + " TEXT," +
+                    Const.ToDoItemEntry.COL_ISCOMPLETED + " BOOLEAN," +
                     Const.ToDoItemEntry.COL_FK_ToDo + " INTEGER NOT NULL CONSTRAINT fk_nn_task REFERENCES " +
                     Const.ToDoEntry.TABLE_NAME + "(" + Const.ToDoEntry._ID + ")" +")";
 
@@ -64,12 +66,12 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     // Méthode pour ajouter des tâches dans la table ToDO
-    public Boolean addToDo(String title, Date endDate){
+    public Boolean addToDo(String title, LocalDate endDate){
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(Const.ToDoEntry.COL_TITLE, title);
-        //values.put(Const.ToDoEntry.COL_ENDDATE, endDate.toString());
+        values.put(Const.ToDoEntry.COL_ENDDATE, endDate.toString());
 
         Long res = db.insert(Const.ToDoEntry.TABLE_NAME, null, values);
 
@@ -88,7 +90,8 @@ public class DbHelper extends SQLiteOpenHelper {
             do{
                 ToDo toDo = new ToDo(
                         queryRes.getLong(queryRes.getColumnIndex(Const.ToDoEntry._ID)),
-                        queryRes.getString(queryRes.getColumnIndex(Const.ToDoEntry.COL_TITLE)));
+                        queryRes.getString(queryRes.getColumnIndex(Const.ToDoEntry.COL_TITLE)),
+                        new Date(Calendar.DATE));
                 listRes.add(toDo);
 
             } while(queryRes.moveToNext());

@@ -7,20 +7,20 @@ import java.util.List;
 public class ToDo {
     private Long numID;
     private String title;
-    //private Date endDate;
+    private Date endDate;
     private List<ToDoItem> listItems;
 
-    public ToDo(Long numID, String title/*, Date endDate*/) {
+    public ToDo(Long numID, String title, Date endDate) {
         this.numID = numID;
         this.title = title;
-        //this.endDate = endDate;
+        this.endDate = endDate;
         this.listItems = new ArrayList<>();
     }
 
-    public ToDo(String title/*, Date endDate*/) {
+    public ToDo(String title, Date endDate) {
         this.numID = -1L;
         this.title = title;
-        //this.endDate = endDate;
+        this.endDate = endDate;
         this.listItems = new ArrayList<>();
     }
 

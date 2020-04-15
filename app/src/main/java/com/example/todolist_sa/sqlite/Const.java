@@ -12,7 +12,7 @@ public class Const {
         public static final String TABLE_NAME = "tasks";
         public static final String COL_TITLE = "title";
         public static final String COL_ENDDATE = "endDate";
-        //public static final String COL_TASK_IMG = "img";
+        public static final String COL_IMG = "img";
     }
 
     /* Classe intérieure qui définit le contenu de la table ToDoItem */

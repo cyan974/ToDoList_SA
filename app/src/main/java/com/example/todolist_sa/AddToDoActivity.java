@@ -1,31 +1,123 @@
 package com.example.todolist_sa;
 
 import android.app.Activity;
-import android.content.ContentValues;
-import android.database.sqlite.SQLiteDatabase;
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
 
-import com.example.todolist_sa.sqlite.Const;
+
+import androidx.annotation.RequiresApi;
+
 import com.example.todolist_sa.sqlite.DbHelper;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
 public class AddToDoActivity extends Activity {
-    private DbHelper mHelper;
+    DbHelper dbHelper;
+    DatePickerDialog datePickerDialog;
+
+    List listItems = new ArrayList<>();
+    ListView listItem;
+    private ArrayAdapter<String> mAdapter;
+
+    EditText edtTitre;
+    EditText edtElement;
+    TextView txtDate;
+
+    LocalDate endDate;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_task);
+        setContentView(R.layout.activity_addtodo);
 
-        mHelper = new DbHelper(this);
+        edtTitre = findViewById(R.id.edtTitre);
+        txtDate = findViewById(R.id.txtDate);
+        edtElement = findViewById(R.id.edtElement);
+        listItem = findViewById(R.id.listItem);
+        listItem.setItemsCanFocus(true);
+
+        dbHelper = new DbHelper(this);
+
+        mAdapter = new ArrayAdapter(this, R.layout.list_itemtodo, R.id.txtLabel, listItems);
+        listItem.setAdapter(mAdapter);
+
+
     }
 
-    public void onClick_Add(View view){
-        EditText edtxt_title = findViewById(R.id.editTxt_Titre);
-        DbHelper dbHelper = new DbHelper(this);
+
+    // Méthode onClick pour l'ajout d'une date via l'interface d'un calendrier
+    public void onClickDate(View v){
+        // calender class's instance and get current date , month and year from calender
+        final Calendar c = Calendar.getInstance();
+        int mYear = c.get(Calendar.YEAR); // current year
+        int mMonth = c.get(Calendar.MONTH); // current month
+        int mDay = c.get(Calendar.DAY_OF_MONTH); // current day
+        // date picker dialog
+        datePickerDialog = new DatePickerDialog(AddToDoActivity.this,
+                new DatePickerDialog.OnDateSetListener() {
+
+                    @RequiresApi(api = Build.VERSION_CODES.O)
+                    @Override
+                    public void onDateSet(DatePicker view, int year,
+                                          int monthOfYear, int dayOfMonth) {
+
+                        TextView txtDate = findViewById(R.id.txtDate);
+                        // set day of month , month and year value in the edit text
+
+                        endDate = LocalDate.of(year,monthOfYear+1,dayOfMonth);
+
+                        txtDate.setText(dayOfMonth + "/"
+                                + (monthOfYear + 1) + "/" + year);
+
+                        //cDate.set(year,monthOfYear,dayOfMonth);
+
+                    }
+                }, mYear, mMonth, mDay);
+        datePickerDialog.show();
+    }
 
 
-        AddToDoActivity.this.finish();
+    public void onClickAdd(View v){
+
+        if(edtTitre.getText().toString().length() > 0 && txtDate.getText().toString() != ""){
+            dbHelper.addToDo(edtTitre.getText().toString(), endDate);
+            finish();
+        } else {
+            AlertDialog alert = new AlertDialog.Builder(AddToDoActivity.this).create();
+            alert.setTitle("Erreur");
+            alert.setMessage("Vous ne pouvez pas laisser les champs vides");
+            alert.setButton(Dialog.BUTTON_POSITIVE,"OK",new DialogInterface.OnClickListener(){
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            alert.show();
+        }
+    }
+
+    public void onClickAddElement(View v){
+        if(edtElement.getText().toString().length() > 0){
+            listItems.add(edtElement.getText().toString());
+            mAdapter.notifyDataSetChanged();
+
+            edtElement.setText("");
+        }
     }
 }

@@ -81,6 +81,13 @@ public class MainActivity extends AppCompatActivity {
         db.close();
     }
 
+    // Méthode qui s'exécute à chaque fois qu'on revient sur cette activité
+    @Override
+    protected void onResume(){
+        super.onResume();
+        updateUI();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
@@ -90,9 +97,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_add_task:
-                //addTask();
-                return true;
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -103,23 +107,22 @@ public class MainActivity extends AppCompatActivity {
         Intent itnAddTask = new Intent(MainActivity.this, AddToDoActivity.class);
         startActivity(itnAddTask);
 
-        /*final EditText taskEditText = new EditText(this);
+        /*// Création des EditText pour le titre et la date d'une ToDo (tâche)
+        final EditText taskEditText = new EditText(this);
+        final EditText taskTest = new EditText(this);
+
+        View viw = getLayoutInflater().inflate(R.layout.activity_addtodo, null);
+
+        // Création d'un alert dialog pour l'ajout d'une tâche
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("Ajouter une nouvelle tâche")
-                .setMessage("Que veux-tu faire après?")
-                .setView(taskEditText)
+                .setIcon(R.drawable.logo)
+                .setView(viw)
                 .setPositiveButton("Ajouter", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String task = String.valueOf(taskEditText.getText());
-                        SQLiteDatabase db = mHelper.getWritableDatabase();
-                        ContentValues values = new ContentValues();
-                        values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
-                        db.insertWithOnConflict(TaskContract.TaskEntry.TABLE_NAME,
-                                null,
-                                values,
-                                SQLiteDatabase.CONFLICT_REPLACE);
-                        db.close();
+                        mHelper.addToDo(task);
                         updateUI();
                     }
                 })
@@ -131,9 +134,7 @@ public class MainActivity extends AppCompatActivity {
     private void updateUI() {
         ArrayList<String> taskList = new ArrayList<>();
         SQLiteDatabase db = mHelper.getReadableDatabase();
-        Cursor cursor = db.query(Const.ToDoEntry.TABLE_NAME,
-                new String[]{Const.ToDoEntry._ID, Const.ToDoEntry.COL_TITLE},
-                null, null, null, null, null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + Const.ToDoEntry.TABLE_NAME, null);
         while (cursor.moveToNext()) {
             int idx = cursor.getColumnIndex(Const.ToDoEntry.COL_TITLE);
             taskList.add(cursor.getString(idx));
@@ -141,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (mAdapter == null) {
             mAdapter = new ArrayAdapter<>(this,
-                    R.layout.item_todo,
+                    R.layout.list_todo,
                     R.id.task_title,
                     taskList);
             mTaskListView.setAdapter(mAdapter);

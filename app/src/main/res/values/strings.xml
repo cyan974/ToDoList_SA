@@ -1,4 +1,7 @@
 <resources>
-    <string name="app_name">ToDoList_SA</string>
+    <string name="app_name">ToDoList</string>
     <string name="bienvenue">Bienvenue</string>
+
+    <string name="datepicker"></string>
+    <string name="Button_date_name">Date</string>
 </resources>
