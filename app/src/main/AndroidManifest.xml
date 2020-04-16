@@ -19,5 +19,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".AddToDoActivity" />
+        <activity android:name=".ViewToDoActivity" />
     </application>
 </manifest>

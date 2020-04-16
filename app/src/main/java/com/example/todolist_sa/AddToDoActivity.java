@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 
+import com.example.todolist_sa.DTO.ToDo;
 import com.example.todolist_sa.sqlite.DbHelper;
 
 import java.time.LocalDate;
@@ -28,7 +29,7 @@ public class AddToDoActivity extends Activity {
     DbHelper dbHelper;
     DatePickerDialog datePickerDialog;
 
-    List listItems = new ArrayList<>();
+    List<String> listItems = new ArrayList<>();
     ListView listItem;
     private ArrayAdapter<String> mAdapter;
 
@@ -53,12 +54,9 @@ public class AddToDoActivity extends Activity {
 
         dbHelper = new DbHelper(this);
 
-        mAdapter = new ArrayAdapter(this, R.layout.list_itemtodo, R.id.txtLabel, listItems);
+        mAdapter = new ArrayAdapter(this, R.layout.list_itemtodo, R.id.txtElement, listItems);
         listItem.setAdapter(mAdapter);
-
-
     }
-
 
     // Méthode onClick pour l'ajout d'une date via l'interface d'un calendrier
     public void onClickDate(View v){
@@ -92,10 +90,34 @@ public class AddToDoActivity extends Activity {
     }
 
 
-    public void onClickAdd(View v){
+    public void onClickAddElement(View v){
+        if(edtElement.getText().toString().length() > 0){
+            listItems.add(edtElement.getText().toString());
+            mAdapter.notifyDataSetChanged();
 
+            edtElement.getText().clear();
+        }
+    }
+
+    public void onClickDeleteElement(View v){
+        View parent = (View) v.getParent();
+        TextView ele = parent.findViewById(R.id.txtElement);
+        listItems.remove(ele.getText().toString());
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void onClickAdd(View v){
         if(edtTitre.getText().toString().length() > 0 && txtDate.getText().toString() != ""){
-            dbHelper.addToDo(edtTitre.getText().toString(), endDate);
+            if(dbHelper.addToDo(edtTitre.getText().toString(), endDate)){
+            ToDo toDo = dbHelper.searchTodoByTitle(edtTitre.getText().toString());
+                for(String name:listItems){
+                    Boolean res = dbHelper.addToDoItem(toDo.getNumID(), name);
+                }
+            } else {
+                // Afficher une erreur lors de l'ajout
+            }
+
             finish();
         } else {
             AlertDialog alert = new AlertDialog.Builder(AddToDoActivity.this).create();
@@ -109,15 +131,6 @@ public class AddToDoActivity extends Activity {
                 }
             });
             alert.show();
-        }
-    }
-
-    public void onClickAddElement(View v){
-        if(edtElement.getText().toString().length() > 0){
-            listItems.add(edtElement.getText().toString());
-            mAdapter.notifyDataSetChanged();
-
-            edtElement.setText("");
         }
     }
 }

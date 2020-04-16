@@ -1,25 +1,25 @@
 package com.example.todolist_sa.DTO;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class ToDo {
+public class ToDo implements Serializable {
     private Long numID;
     private String title;
-    private Date endDate;
-    private List<ToDoItem> listItems;
+    private Long tagID;
+    private LocalDate endDate;
+    private ArrayList<ToDoItem> listItems;
 
-    public ToDo(Long numID, String title, Date endDate) {
+    public ToDo(Long numID, Long tag, String title, LocalDate endDate) {
         this.numID = numID;
         this.title = title;
-        this.endDate = endDate;
-        this.listItems = new ArrayList<>();
-    }
-
-    public ToDo(String title, Date endDate) {
-        this.numID = -1L;
-        this.title = title;
+        this.tagID = tag;
         this.endDate = endDate;
         this.listItems = new ArrayList<>();
     }
@@ -29,20 +29,20 @@ public class ToDo {
     }
 
     public Long getNumID() {
-        return numID;
+        return this.numID;
     }
 
     public String getTitle() {
-        return title;
+        return this.title;
     }
 
-    /*public Date getEndDate() {
-        return endDate;
-    }*/
+    public Long getTag(){return this.tagID;}
+
+    public LocalDate getEndDate() {
+        return this.endDate;
+    }
 
     public List<ToDoItem> getListItems() {
-        return listItems;
+        return this.listItems;
     }
-
-
 }
