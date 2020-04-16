@@ -20,7 +20,7 @@ import com.example.todolist_sa.sqlite.DbHelper;
 
 import java.util.ArrayList;
 import java.util.List;
-
+//Main
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private DbHelper mHelper;
