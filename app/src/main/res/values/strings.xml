@@ -4,4 +4,11 @@
 
     <string name="datepicker"></string>
     <string name="Button_date_name">Date</string>
+
+    <string name="notify_me">Notify Me</string>
+    <string name="channel_desc">Reste 1 j avant date de fin</string>
+    <string name="channel_name">ToDo list notification</string>
+    <string name="notify_title">Notification</string>
+    <string name="notify_text">Il vous reste 1 jour pour finir votre todo list !</string>
+    <string name="toast_message">You will be notified</string>
 </resources>
