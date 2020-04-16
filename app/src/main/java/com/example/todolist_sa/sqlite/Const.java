@@ -25,7 +25,7 @@ public class Const {
     }
 
     /* Classe intérieure qui définit le contenu de la table Tags */
-    public class Tags implements BaseColumns {
+    public class TagsEntry implements BaseColumns {
         public static final String TABLE_NAME = "tags";
         public static final String COL_LIBELLE = "libelle";
     }

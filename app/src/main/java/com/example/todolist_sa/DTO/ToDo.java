@@ -20,14 +20,6 @@ public class ToDo {
         this.listItems = new ArrayList<>();
     }
 
-    public ToDo(Long tag, String title, LocalDate endDate) {
-        this.numID = -1L;
-        this.title = title;
-        this.tagID = tag;
-        this.endDate = endDate;
-        this.listItems = new ArrayList<>();
-    }
-
     public void addItems(ToDoItem item){
         this.listItems.add(item);
     }

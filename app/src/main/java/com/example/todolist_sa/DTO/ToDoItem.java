@@ -13,13 +13,6 @@ public class ToDoItem {
         this.isCompleted = false;
     }
 
-    public ToDoItem(Long idToDo, String name){
-        this.numID = -1L;
-        this.idToDo = idToDo;
-        this.name = name;
-        this.isCompleted = false;
-    }
-
     public Long getNumID() {
         return numID;
     }

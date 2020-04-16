@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground"
+    android:onClick="viewTask"
     card_view:cardCornerRadius="10dp"
     card_view:cardElevation="8dp">
 

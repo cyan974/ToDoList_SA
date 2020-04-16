@@ -112,13 +112,11 @@ public class AddToDoActivity extends Activity {
             if(dbHelper.addToDo(edtTitre.getText().toString(), endDate)){
             ToDo toDo = dbHelper.searchTodoByTitle(edtTitre.getText().toString());
                 for(String name:listItems){
-                    dbHelper.addToDoItem(toDo.getNumID(), name);
+                    Boolean res = dbHelper.addToDoItem(toDo.getNumID(), name);
                 }
             } else {
                 // Afficher une erreur lors de l'ajout
             }
-
-
 
             finish();
         } else {

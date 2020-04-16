@@ -14,8 +14,6 @@ import com.example.todolist_sa.DTO.ToDoItem;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public class DbHelper extends SQLiteOpenHelper {
@@ -45,9 +43,9 @@ public class DbHelper extends SQLiteOpenHelper {
 
     // Création de la requête SQL pour créer la table ToDoItem
     private static final String CREATE_TAGS =
-            "CREATE TABLE " + Const.Tags.TABLE_NAME + " (" +
-                    Const.Tags._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    Const.Tags.COL_LIBELLE + " TEXT NOT NULL UNIQUE" + ")";
+            "CREATE TABLE " + Const.TagsEntry.TABLE_NAME + " (" +
+                    Const.TagsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    Const.TagsEntry.COL_LIBELLE + " TEXT NOT NULL UNIQUE" + ")";
 
     // Requête SQL pour supprimer la table ToDo
     private static final String DELETE_ToDo =
@@ -59,7 +57,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     // Requête SQL pour supprimer la table Tags
     private static final String DELETE_TAGS =
-            "DROP TABLE IF EXISTS " + Const.Tags.TABLE_NAME;
+            "DROP TABLE IF EXISTS " + Const.TagsEntry.TABLE_NAME;
 
     public DbHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -103,11 +101,23 @@ public class DbHelper extends SQLiteOpenHelper {
         db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(Const.ToDoItemEntry.COL_FK_ToDo, toDoId);
         values.put(Const.ToDoItemEntry.COL_NAME, name);
         values.put(Const.ToDoItemEntry.COL_ISCOMPLETED, false);
+        values.put(Const.ToDoItemEntry.COL_FK_ToDo, toDoId);
 
         Long res = db.insert(Const.ToDoItemEntry.TABLE_NAME, null, values);
+
+        db.close();
+        return res!=-1L;
+    }
+
+    public Boolean addTag(String tag){
+        db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(Const.TagsEntry.COL_LIBELLE, tag);
+
+        Long res = db.insert(Const.TagsEntry.TABLE_NAME, null, values);
 
         db.close();
         return res!=-1L;
@@ -165,8 +175,8 @@ public class DbHelper extends SQLiteOpenHelper {
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public List<ToDo> getListToDo(){
-        List<ToDo> listRes = new ArrayList();
+    public ArrayList<ToDo> getListToDo(){
+        ArrayList<ToDo> listRes = new ArrayList();
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor queryRes = db.rawQuery("SELECT * FROM " + Const.ToDoEntry.TABLE_NAME, null);
@@ -175,6 +185,7 @@ public class DbHelper extends SQLiteOpenHelper {
             do{
                 ToDo toDo = new ToDo(
                         queryRes.getLong(queryRes.getColumnIndex(Const.ToDoEntry._ID)),
+                        queryRes.getLong(queryRes.getColumnIndex(Const.ToDoEntry.COL_FK_TAG)),
                         queryRes.getString(queryRes.getColumnIndex(Const.ToDoEntry.COL_TITLE)),
                         LocalDate.parse(queryRes.getString(queryRes.getColumnIndex(Const.ToDoEntry.COL_ENDDATE))));
 
@@ -201,5 +212,30 @@ public class DbHelper extends SQLiteOpenHelper {
         db.close();
 
         return listRes;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void insertFakeData(){
+
+        // Tâches
+        addToDo("Tache 1", LocalDate.of(1997,02,27));
+        addToDo("Tache 2", LocalDate.of(1997,02,27));
+        addToDo("Tache 3", LocalDate.of(1997,02,27));
+        addToDo("Tache 4", LocalDate.of(1997,02,27));
+
+
+        // Éléments des tâches
+        addToDoItem(1L, "Element 1");
+        addToDoItem(2L, "Element 2");
+        addToDoItem(3L, "Element 3");
+        addToDoItem(4L, "Element 4");
+
+
+        // Tags
+        addTag("HEG");
+        addTag("HES");
+        addTag("Maison");
+        addTag("Enfant");
+
     }
 }
