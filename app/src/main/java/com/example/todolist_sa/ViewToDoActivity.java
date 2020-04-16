@@ -33,11 +33,12 @@ public class ViewToDoActivity extends Activity {
         txtDate = findViewById(R.id.txtDate);
         listItem = findViewById(R.id.listTodo);
 
+        // Récupération de l'objet pour afficher les détails
         Intent itn = getIntent();
-        Long idTodo = itn.getLongExtra("ID_TODO", -1L);
+        ToDo todo = (ToDo)itn.getSerializableExtra("TODO");
 
-        ToDo toDo = dbHelper.searchTodoById(idTodo);
-
-        txtTitle.setText(toDo.getTitle());
+        // Mise en place de l'affichage
+        txtTitle.setText(todo.getTitle());
+        txtDate.setText(todo.getEndDate().toString());
     }
 }

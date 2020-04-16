@@ -1,16 +1,20 @@
 package com.example.todolist_sa.DTO;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class ToDo {
+public class ToDo implements Serializable {
     private Long numID;
     private String title;
     private Long tagID;
     private LocalDate endDate;
-    private List<ToDoItem> listItems;
+    private ArrayList<ToDoItem> listItems;
 
     public ToDo(Long numID, Long tag, String title, LocalDate endDate) {
         this.numID = numID;

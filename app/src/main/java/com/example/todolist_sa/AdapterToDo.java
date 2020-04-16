@@ -38,6 +38,7 @@ public class AdapterToDo extends ArrayAdapter<ToDo> {
 
         TextView title = convertView.findViewById(R.id.txtTitle);
         TextView description = convertView.findViewById(R.id.txtDescription);
+        TextView date = convertView.findViewById(R.id.txtDate);
 
         title.setText(toDo.getTitle());
 
@@ -45,8 +46,9 @@ public class AdapterToDo extends ArrayAdapter<ToDo> {
         for(ToDoItem item:toDo.getListItems()){
             str += "- " + item.getName() +"\n";
         }
-
         description.setText(str);
+
+        date.setText(toDo.getEndDate().toString());
         return convertView;
     }
 }

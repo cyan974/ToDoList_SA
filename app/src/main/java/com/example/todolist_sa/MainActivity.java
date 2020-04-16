@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,19 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "MainActivity";
     private DbHelper mHelper;
     private ListView lvToDo;
-    private ArrayAdapter<String> mAdapter;
     private AdapterToDo adapter;
-
-
-    List<ToDo> todoList;
-    String[] listTitles;
-    String[] listDescriptions;
-    String[] listTags;
-
-    ArrayList<ToDo> arrayOfTodo;
+    private ArrayList<ToDo> arrayOfTodo;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -44,18 +36,16 @@ public class MainActivity extends AppCompatActivity {
 
         // Informations de la table sur la bdd
         mHelper = new DbHelper(this);
-        mHelper.insertFakeData();
+        //mHelper.insertFakeData();
 
+        // ArrayList des tâches
         arrayOfTodo = new ArrayList<>();
-        arrayOfTodo = mHelper.getListToDo();
-        adapter = new AdapterToDo(this, arrayOfTodo);
 
         // ListView pour les ToDos
         lvToDo = findViewById(R.id.list_todo);
-        lvToDo.setAdapter(adapter);
 
         // met à jour la liste des tâches
-        //updateList();
+        updateList();
     }
 
     // Méthode qui s'exécute à chaque fois qu'on revient sur cette activité
@@ -73,82 +63,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Méthode qui appelle une vue pour visualiser les informations d'une tâche
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void viewTask(View v){
+        TextView title = v.findViewById(R.id.txtTitle);
+        ToDo todo = mHelper.searchTodoByTitle(title.getText().toString());
+
         Intent itnViewTask = new Intent (MainActivity.this, ViewToDoActivity.class);
-        //itnViewTask.putExtra("ID_TODO", id);
+        itnViewTask.putExtra("TODO", todo);
         startActivity(itnViewTask);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void updateList() {
-        //refreshCollection();
-
-        /*if(adapter == null){
-            adapter = new AdapterToDo(this, listTitles, listDescriptions);
-            lvToDo.setAdapter(adapter);
-            lvToDo.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    viewTask(id);
-                }
-            });
-        } else {
-            refreshCollection();
-            adapter.notifyDataSetChanged();
-        }*/
-
-
-        /*
-        if (mAdapter == null) {
-            mAdapter = new ArrayAdapter<>(this,
-                    R.layout.list_todo,
-                    R.id.txtTitle,
-                    listTitles);
-            lvToDo.setAdapter(mAdapter);
-            lvToDo.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    viewTask(id);
-                }
-            });
-        } else {
-            mAdapter.clear();
-            mAdapter.addAll(listTitles);
-            mAdapter.notifyDataSetChanged();
-        }*/
-    }
-
-    /*@RequiresApi(api = Build.VERSION_CODES.
-            O)
-    private void refreshCollection(){
-        todoList = mHelper.getListToDo();
-
-        listTitles = new String[todoList.size()];
-        listDescriptions = new String[todoList.size()];
-        listTags = new String[todoList.size()];
-
-        int i = 0;
-        for(ToDo todo:todoList){
-            listTitles[i] = todo.getTitle();
-            List<ToDoItem> listItem = todo.getListItems();
-
-            String str = "";
-            for(ToDoItem item:listItem){
-                str += "- " + item.getName() +"\n";
-            }
-            listDescriptions[i] = str;
-            i++;
+        if (adapter != null) {
+            arrayOfTodo.clear();
+            adapter.clear();
         }
-    }*/
+
+        arrayOfTodo = mHelper.getListToDo();
+        adapter = new AdapterToDo(this, arrayOfTodo);
+        lvToDo.setAdapter(adapter);
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void deleteTask(View view) {
         View parent = (View) view.getParent();
         TextView taskTextView = parent.findViewById(R.id.txtTitle);
+
         String task = String.valueOf(taskTextView.getText());
-
         mHelper.deleteToDoByTitle(task);
-
         updateList();
     }
 

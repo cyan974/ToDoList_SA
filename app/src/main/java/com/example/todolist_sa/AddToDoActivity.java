@@ -95,7 +95,7 @@ public class AddToDoActivity extends Activity {
             listItems.add(edtElement.getText().toString());
             mAdapter.notifyDataSetChanged();
 
-            edtElement.setText("");
+            edtElement.getText().clear();
         }
     }
 
