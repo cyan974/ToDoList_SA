@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.Toolbar
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:App="http://schemas.android.com/apk/res-auto"
-    xmlns:segmentedgroup="http://schemas.android.com/apk/res-auto"
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     App:theme="@style/AppTheme"
@@ -14,7 +12,7 @@
         android:id="@+id/lbl_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Ajout d'une tâche"
+        android:text="ToDoList"
         android:textColor="@color/colorWhite"
         android:textSize="22sp" />
 

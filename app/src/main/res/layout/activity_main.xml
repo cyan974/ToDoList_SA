@@ -6,6 +6,10 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar_main" />
+
     <ListView
         android:id="@+id/list_todo"
         android:layout_width="match_parent"

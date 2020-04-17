@@ -24,7 +24,7 @@ public class ViewToDoActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_viewtodo);
+        setContentView(R.layout.activity_detail_todo);
 
         dbHelper = new DbHelper(this);
 
