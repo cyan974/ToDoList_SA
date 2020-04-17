@@ -181,6 +181,21 @@ public class DbHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void deleteToDoById(Long id){
+        db = this.getWritableDatabase();
+
+        // Suppression des éléments liés à la tâche
+        db.delete(Const.ToDoItemEntry.TABLE_NAME,
+                Const.ToDoItemEntry.COL_FK_ToDo + " = ?",
+                new String[]{id.toString()});
+
+        // Suppression de la tâche
+        db.delete(Const.ToDoEntry.TABLE_NAME,
+                Const.ToDoEntry._ID + " = ?",
+                new String[]{id.toString()});
+        db.close();
+    }
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public ArrayList<ToDo> getListToDo(){

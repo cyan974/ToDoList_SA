@@ -48,15 +48,6 @@
             card_view:layout_constraintStart_toEndOf="@+id/imgCard"
             card_view:layout_constraintTop_toBottomOf="@+id/txtTitle" />
 
-        <Button
-            android:id="@+id/task_delete"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
-            android:drawableRight="@android:drawable/ic_menu_delete"
-            android:onClick="deleteTask"
-            card_view:layout_constraintEnd_toEndOf="parent"
-            card_view:layout_constraintTop_toTopOf="parent" />
-
         <TextView
             android:id="@+id/txtDate"
             android:layout_width="wrap_content"

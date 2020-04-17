@@ -42,9 +42,16 @@ public class AdapterToDo extends ArrayAdapter<ToDo> {
 
         title.setText(toDo.getTitle());
 
+        Integer cpt = 0;
         String str = "";
         for(ToDoItem item:toDo.getListItems()){
-            str += "- " + item.getName() +"\n";
+            if(cpt < 5) {
+                str += "- " + item.getName() +"\n";
+                cpt++;
+            } else {
+                str += "..." + "\n";
+                break;
+            }
         }
         description.setText(str);
 

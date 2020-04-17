@@ -1,28 +1,21 @@
 package com.example.todolist_sa;
 
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.todolist_sa.DTO.ToDo;
-import com.example.todolist_sa.DTO.ToDoItem;
 import com.example.todolist_sa.sqlite.DbHelper;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private DbHelper mHelper;
@@ -89,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         TextView title = v.findViewById(R.id.txtTitle);
         ToDo todo = mHelper.searchTodoByTitle(title.getText().toString());
 
-        Intent itnViewTask = new Intent (MainActivity.this, ViewToDoActivity.class);
+        Intent itnViewTask = new Intent (MainActivity.this, DetailToDoActivity.class);
         itnViewTask.putExtra("TODO", todo);
         startActivity(itnViewTask);
     }
@@ -106,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         lvToDo.setAdapter(adapter);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    /*@RequiresApi(api = Build.VERSION_CODES.O)
     public void deleteTask(View view) {
         View parent = (View) view.getParent();
         TextView taskTextView = parent.findViewById(R.id.txtTitle);
@@ -114,6 +107,6 @@ public class MainActivity extends AppCompatActivity {
         String task = String.valueOf(taskTextView.getText());
         mHelper.deleteToDoByTitle(task);
         updateList();
-    }
+    }*/
 
 }
