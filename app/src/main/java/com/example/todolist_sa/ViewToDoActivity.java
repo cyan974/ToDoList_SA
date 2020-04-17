@@ -1,36 +1,32 @@
 package com.example.todolist_sa;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.widget.Toolbar;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.todolist_sa.DTO.ToDo;
 import com.example.todolist_sa.sqlite.DbHelper;
 
-public class ViewToDoActivity extends Activity {
+public class ViewToDoActivity extends AppCompatActivity {
     DbHelper dbHelper;
 
     TextView txtTitle;
     TextView txtDate;
     ListView listItem;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_todo);
 
-        // Toolbar - modifier le titre de la vue
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        TextView title = toolbar.findViewById(R.id.lbl_title);
-        title.setText("Détail de la tâche");
+        // ActionBar - modifier le titre de la vue
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle("Détails de la tâche");
 
         dbHelper = new DbHelper(this);
 

@@ -123,6 +123,14 @@ public class DbHelper extends SQLiteOpenHelper {
         return res!=-1L;
     }
 
+    public void deleteTag(String tag){
+        db = this.getWritableDatabase();
+        db.delete(Const.TagsEntry.TABLE_NAME,
+                Const.TagsEntry.COL_LIBELLE + " = ?",
+                new String[]{tag});
+        db.close();
+    }
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public ToDo searchTodoByTitle(String title){
@@ -212,6 +220,25 @@ public class DbHelper extends SQLiteOpenHelper {
         db.close();
 
         return listRes;
+    }
+
+    public ArrayList<String> getListTag(){
+        ArrayList<String> listTags = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor queryRes = db.rawQuery("SELECT * FROM " + Const.TagsEntry.TABLE_NAME, null);
+
+        if(queryRes.moveToFirst()){
+            do{
+                String libelle = queryRes.getString(queryRes.getColumnIndex(Const.TagsEntry.COL_LIBELLE));
+                listTags.add(libelle);
+            } while(queryRes.moveToNext());
+        }
+
+        queryRes.close();
+        db.close();
+
+        return listTags;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

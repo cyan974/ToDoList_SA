@@ -1,19 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:App="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="56dp"
     android:background="@color/colorPrimary"
-    App:theme="@style/AppTheme">
-
-    <TextView
-        android:id="@+id/lbl_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ToDoList"
-        android:textColor="@color/colorWhite"
-        android:textSize="22sp" />
-
-</androidx.appcompat.widget.Toolbar>
+    android:fitsSystemWindows="true"
+    App:theme="@style/AppTheme"
+    App:title="ToDoList"
+    App:titleTextColor="#FFFFFF" />

@@ -1,13 +1,16 @@
 package com.example.todolist_sa;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -55,6 +58,23 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume(){
         super.onResume();
         updateList();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_libelle:
+                Intent itnLibelle = new Intent(MainActivity.this, TagsActivity.class);
+                startActivity(itnLibelle);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     // Méthode qui appelle une vue pour créer une tâche

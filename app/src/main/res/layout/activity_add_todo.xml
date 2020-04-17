@@ -7,10 +7,6 @@
     tools:context=".AddToDoActivity"
     tools:ignore="MissingDefaultResource">
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/toolbar_app" />
-
     <EditText
         android:id="@+id/edtTitre"
         android:layout_width="0dp"
@@ -30,28 +26,16 @@
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
     <Button
-        android:id="@+id/btnPhoto"
-        android:layout_width="55dp"
-        android:layout_height="55dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginRight="10dp"
-        android:drawableRight="@android:drawable/ic_menu_camera"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edtTitre" />
-
-    <Button
         android:id="@+id/btnDate"
         android:layout_width="55dp"
         android:layout_height="55dp"
         android:layout_marginTop="20dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginRight="15dp"
         android:drawableRight="@android:drawable/ic_menu_my_calendar"
         android:onClick="onClickDate"
         android:textSize="18sp"
-        app:layout_constraintEnd_toStartOf="@+id/btnPhoto"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edtTitre" />
 
     <TextView

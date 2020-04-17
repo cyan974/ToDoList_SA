@@ -20,5 +20,6 @@
         </activity>
         <activity android:name=".AddToDoActivity" />
         <activity android:name=".ViewToDoActivity" />
+        <activity android:name=".TagsActivity" />
     </application>
 </manifest>

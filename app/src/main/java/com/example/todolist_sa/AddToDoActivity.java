@@ -1,6 +1,5 @@
 package com.example.todolist_sa;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -17,7 +16,8 @@ import android.widget.TextView;
 
 
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.widget.Toolbar;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.todolist_sa.DTO.ToDo;
 import com.example.todolist_sa.sqlite.DbHelper;
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class AddToDoActivity extends Activity {
+public class AddToDoActivity extends AppCompatActivity {
     DbHelper dbHelper;
     DatePickerDialog datePickerDialog;
 
@@ -48,23 +48,27 @@ public class AddToDoActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_todo);
 
-        // Toolbar - modifier le titre de la vue
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        TextView title = toolbar.findViewById(R.id.lbl_title);
-        title.setText("Ajout d'une tâche");
+        dbHelper = new DbHelper(this);
+
+        // ActionBar - modifier le titre de la vue
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle("Ajout d'une tâche");
 
         edtTitre = findViewById(R.id.edtTitre);
         txtDate = findViewById(R.id.txtDate);
         edtElement = findViewById(R.id.edtElement);
+
+        // Gestion de l'affichage pour la ListView
         listItem = findViewById(R.id.listItem);
-        listItem.setItemsCanFocus(true);
-
-        dbHelper = new DbHelper(this);
-
         mAdapter = new ArrayAdapter(this, R.layout.list_item_todo, R.id.txtElement, listItems);
         listItem.setAdapter(mAdapter);
+    }
 
-
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.add_todo_menu, menu);
+        return true;
     }
 
     // Méthode onClick pour l'ajout d'une date via l'interface d'un calendrier
