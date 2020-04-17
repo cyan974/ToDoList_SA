@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.widget.Toolbar;
 
 import com.example.todolist_sa.DTO.ToDo;
 import com.example.todolist_sa.sqlite.DbHelper;
@@ -46,6 +47,11 @@ public class AddToDoActivity extends Activity {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_todo);
+
+        // Toolbar - modifier le titre de la vue
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        TextView title = toolbar.findViewById(R.id.lbl_title);
+        title.setText("Ajout d'une tâche");
 
         edtTitre = findViewById(R.id.edtTitre);
         txtDate = findViewById(R.id.txtDate);
