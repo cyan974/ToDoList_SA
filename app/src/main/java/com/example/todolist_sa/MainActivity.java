@@ -1,25 +1,5 @@
 package com.example.todolist_sa;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Intent;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Parcelable;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
-
-import com.example.todolist_sa.DTO.ToDo;
-import com.example.todolist_sa.DTO.ToDoItem;
-import com.example.todolist_sa.sqlite.DbHelper;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -27,18 +7,22 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.todolist_sa.DTO.ToDo;
+import com.example.todolist_sa.sqlite.DbHelper;
+
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 //Main
 public class MainActivity extends AppCompatActivity {
     private DbHelper mHelper;
@@ -91,8 +75,10 @@ public class MainActivity extends AppCompatActivity {
                     if (alarmManager != null){
                         Calendar calendar = Calendar.getInstance();
                         // référence à retravailler avec la date de fin de la liste
-                        calendar.set(Calendar.HOUR, 11);
-                        calendar.set(Calendar.MINUTE, 11);
+                        //calendar.set(Calendar.MONTH, COL_ENDATE.MONTH);
+                        //calendar.set(Calendar.YEAR, COL_ENDATE.YEAR);
+                        //calendar.set(Calendar.DAY, COL_ENDATE.DAY-1);
+
                         alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
                         Toast.makeText(MainActivity.this, R.string.toast_message, Toast.LENGTH_LONG).show();
                     }
