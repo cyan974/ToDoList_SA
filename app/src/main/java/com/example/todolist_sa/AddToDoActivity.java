@@ -1,5 +1,6 @@
 package com.example.todolist_sa;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -7,6 +8,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -56,6 +58,13 @@ public class AddToDoActivity extends Activity {
 
         mAdapter = new ArrayAdapter(this, R.layout.list_itemtodo, R.id.txtElement, listItems);
         listItem.setAdapter(mAdapter);
+
+
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.view_menu, menu);
+        return true;
     }
 
     // Méthode onClick pour l'ajout d'une date via l'interface d'un calendrier
