@@ -26,6 +26,15 @@ public class ToDo implements Serializable {
         this.listTags = new ArrayList<>();
     }
 
+    public ToDo(String title, LocalDate endDate, ArrayList<ToDoItem> listItems){
+        this.numID = null;
+        this.title = title;
+        this.tagID = null;
+        this.endDate = endDate;
+        this.listItems = listItems;
+        this.listTags = new ArrayList<>();
+    }
+
     public void addItem(ToDoItem item){
         this.listItems.add(item);
     }

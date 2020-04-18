@@ -18,12 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TagsActivity extends AppCompatActivity {
-    DbHelper dbHelper;
+    private DbHelper dbHelper;
 
-    EditText edtTag;
+    private EditText edtTag;
 
-    List<String> listTags = new ArrayList<>();
-    ListView lvTags;
+    private List<String> listTags = new ArrayList<>();
+    private ListView lvTags;
     private ArrayAdapter<String> mAdapter;
 
     @Override

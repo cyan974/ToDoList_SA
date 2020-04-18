@@ -1,28 +1,34 @@
 package com.example.todolist_sa.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.todolist_sa.DTO.Tag;
+import com.example.todolist_sa.DTO.ToDo;
 import com.example.todolist_sa.R;
+import com.example.todolist_sa.adapter.AdapterTags;
 import com.example.todolist_sa.sqlite.DbHelper;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class SelectTagsActivity extends AppCompatActivity {
-    DbHelper dbHelper;
+    private DbHelper dbHelper;
 
-    ListView lvTags;
-    List<String> listTags;
-    private ArrayAdapter<String> mAdapter;
+    private AdapterTags adapter;
+    private ListView lvTags;
+    private ArrayList<Tag> listTags;
+
+    private ArrayList<Tag> listTagsAdd;
+    private ToDo todo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,24 +36,38 @@ public class SelectTagsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_tags);
 
+        setTitle("Sélectionnez des libellés");
+
         dbHelper = new DbHelper(this);
 
-        // ActionBar - modifier le titre de la vue
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Sélectionnez des libellés");
+        Intent itn = getIntent();
+        listTagsAdd = (ArrayList<Tag>) itn.getSerializableExtra("LIST_TAGS");
+        todo = (ToDo) itn.getSerializableExtra("TODO");
+
+        listTags = new ArrayList<>();
 
         lvTags = findViewById(R.id.listSelectTags);
         initializeList();
     }
 
-    private void initializeList(){
-        listTags = new ArrayList<>();
-        for(Tag tag:dbHelper.getListTag()){
-            listTags.add(tag.getLibelle());
-        }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
 
-        mAdapter = new ArrayAdapter(this, R.layout.list_select_tags, R.id.txtTag, listTags);
-        lvTags.setAdapter(mAdapter);
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void initializeList(){
+
+        listTags = dbHelper.getListTag();
+
+        adapter = new AdapterTags(this, listTags);
+        lvTags.setAdapter(adapter);
     }
 
 
@@ -56,8 +76,20 @@ public class SelectTagsActivity extends AppCompatActivity {
         CheckBox cbxSelect = parent.findViewById(R.id.cbxSelected);
         TextView txtTag = parent.findViewById(R.id.txtTag);
 
+        Tag tag = dbHelper.searchTagByName(txtTag.getText().toString());
+
         if(cbxSelect.isChecked()){
-            //txtTag.setText("BIEN");
+            listTagsAdd.add(tag);
+        } else {
+            listTagsAdd.remove(tag);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra("TODO", todo);
+        setResult(RESULT_OK, intent);
+        super.onBackPressed();
     }
 }

@@ -1,6 +1,8 @@
 package com.example.todolist_sa.DTO;
 
-public class Tag {
+import java.io.Serializable;
+
+public class Tag implements Serializable {
     private Long numID;
     private String libelle;
 

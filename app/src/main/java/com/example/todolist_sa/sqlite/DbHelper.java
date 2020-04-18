@@ -141,17 +141,14 @@ public class DbHelper extends SQLiteOpenHelper {
         return res!=-1L;
     }
 
-    public Boolean addTag_Todo(ToDo todo){
+    public Boolean addTag_Todo(Long idTag, Long idTodo){
         db = this.getWritableDatabase();
-        Long res = -1L;
 
         ContentValues values = new ContentValues();
-        values.put(Const.TagTodoEntry.COL_FK_TODO, todo.getNumID());
+        values.put(Const.TagTodoEntry.COL_FK_TODO, idTodo);
+        values.put(Const.TagTodoEntry.COL_FK_TAG, idTag);
 
-        for(Tag tag: todo.getListTags()){
-            values.put(Const.TagTodoEntry.COL_FK_TAG, tag.getNumID());
-            res = db.insert(Const.TagTodoEntry.TABLE_NAME, null, values);
-        }
+        Long res = db.insert(Const.TagTodoEntry.TABLE_NAME, null, values);
 
         db.close();
         return res!=-1L;
@@ -163,6 +160,24 @@ public class DbHelper extends SQLiteOpenHelper {
                 Const.TagsEntry.COL_LIBELLE + " = ?",
                 new String[]{tag});
         db.close();
+    }
+
+    public Tag searchTagByName(String name){
+        db = this.getReadableDatabase();
+
+        Cursor queryRes = db.rawQuery("SELECT * FROM " + Const.TagsEntry.TABLE_NAME + " WHERE " + Const.TagsEntry.COL_LIBELLE + " =?", new String[] { name });
+
+        if(queryRes.moveToFirst()){
+            db.close();
+            return new Tag(
+                    queryRes.getLong(queryRes.getColumnIndex(Const.TagsEntry._ID)),
+                    queryRes.getString(queryRes.getColumnIndex(Const.TagsEntry.COL_LIBELLE))
+            );
+        } else {
+            db.close();
+            queryRes.close();
+            return null;
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -334,6 +349,13 @@ public class DbHelper extends SQLiteOpenHelper {
                 new String[] {id.toString(), nameItem});
 
         db.close();
+    }
+
+    public void updateTag(String name){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(Const.TagsEntry.COL_LIBELLE, name);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
