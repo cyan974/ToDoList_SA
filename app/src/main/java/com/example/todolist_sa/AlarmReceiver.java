@@ -24,8 +24,8 @@ public class AlarmReceiver extends BroadcastReceiver {
         Intent intent = new Intent(context, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, NOTIFICATION_ID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, PRIMARY_CHANNEL_ID);
-        builder.setSmallIcon(R.drawable.ic_android_icon)
-                .setContentTitle(context.getResources().getString(R.string.notify_title))
+        //builder.setSmallIcon(R.drawable.ic_android_icon)
+                builder.setContentTitle(context.getResources().getString(R.string.notify_title))
                 .setContentText(context.getResources().getString(R.string.notify_text))
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
