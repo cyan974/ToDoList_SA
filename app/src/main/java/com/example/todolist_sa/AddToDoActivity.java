@@ -59,9 +59,9 @@ public class AddToDoActivity extends AppCompatActivity {
         edtElement = findViewById(R.id.edtElement);
 
         // Gestion de l'affichage pour la ListView
-        listItem = findViewById(R.id.listItem);
+        /*listItem = findViewById(R.id.listItem);
         mAdapter = new ArrayAdapter(this, R.layout.list_item_todo, R.id.txtElement, listItems);
-        listItem.setAdapter(mAdapter);
+        listItem.setAdapter(mAdapter);*/
     }
 
     @Override

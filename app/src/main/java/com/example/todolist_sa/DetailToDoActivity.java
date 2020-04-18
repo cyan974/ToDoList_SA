@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -13,13 +14,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.todolist_sa.DTO.ToDo;
 import com.example.todolist_sa.sqlite.DbHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DetailToDoActivity extends AppCompatActivity {
     DbHelper dbHelper;
     ToDo todo;
 
     TextView txtTitle;
     TextView txtDate;
+
+    List<String> listItems = new ArrayList<>();
     ListView listItem;
+    private ArrayAdapter<String> ItemAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +52,11 @@ public class DetailToDoActivity extends AppCompatActivity {
         // Mise en place de l'affichage
         txtTitle.setText(todo.getTitle());
         txtDate.setText(todo.getEndDate().toString());
+
+        // Gestion de l'affichage pour la ListView
+        listItem = findViewById(R.id.listItem);
+        ItemAdapter = new ArrayAdapter(this, R.layout.list_item_todo, R.id.txtElement, listItems);
+        listItem.setAdapter(ItemAdapter);
     }
 
     @Override
