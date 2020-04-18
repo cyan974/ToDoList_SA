@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -60,15 +61,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         // a rajouter dans la vue listtodo
-        ToggleButton toggleButton = findViewById(R.id.toggleButton);
+        Switch simpleSwitch = findViewById(R.id.toggleButton);
+        simpleSwitch.setTextOff("OFF");
+        simpleSwitch.setTextOn("ON");
         Intent intent = new Intent(this, AlarmReceiver.class);
         final boolean alarmSet = (PendingIntent.getBroadcast(this, NOTIFICATION_ID, intent, PendingIntent.FLAG_NO_CREATE) != null);
-        toggleButton.setChecked(alarmSet);
+        simpleSwitch.setChecked(alarmSet);
 
         final PendingIntent pendingIntent = PendingIntent.getBroadcast(this, NOTIFICATION_ID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         final AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
-        toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        simpleSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked){
