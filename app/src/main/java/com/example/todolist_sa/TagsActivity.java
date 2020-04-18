@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.todolist_sa.DTO.Tag;
 import com.example.todolist_sa.sqlite.DbHelper;
 
 import java.util.ArrayList;
@@ -19,7 +20,6 @@ public class TagsActivity extends AppCompatActivity {
     DbHelper dbHelper;
 
     EditText edtTag;
-    TextView txtInfo;
 
     List<String> listTags = new ArrayList<>();
     ListView lvTags;
@@ -38,7 +38,6 @@ public class TagsActivity extends AppCompatActivity {
         actionBar.setTitle("Gestion des libellés");
 
         edtTag = findViewById(R.id.edtTag);
-        txtInfo = findViewById(R.id.txtInfo);
         lvTags = findViewById(R.id.listTags);
 
         // Met à jour l'affichage de la liste par rapport a la base de données
@@ -70,7 +69,10 @@ public class TagsActivity extends AppCompatActivity {
             mAdapter.clear();
         }
 
-        listTags = dbHelper.getListTag();
+        for(Tag tag:dbHelper.getListTag()){
+            listTags.add(tag.getLibelle());
+        }
+
         mAdapter = new ArrayAdapter(this, R.layout.list_tags, R.id.txtTag, listTags);
         lvTags.setAdapter(mAdapter);
     }

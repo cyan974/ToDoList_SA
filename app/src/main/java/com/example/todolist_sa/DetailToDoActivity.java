@@ -4,7 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
+import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -12,21 +13,22 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.todolist_sa.DTO.ToDo;
+import com.example.todolist_sa.DTO.ToDoItem;
 import com.example.todolist_sa.sqlite.DbHelper;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class DetailToDoActivity extends AppCompatActivity {
-    DbHelper dbHelper;
-    ToDo todo;
+    private DbHelper dbHelper;
+    private ToDo todo;
 
-    TextView txtTitle;
-    TextView txtDate;
+    private TextView txtTitle;
+    private TextView txtDate;
 
-    List<String> listItems = new ArrayList<>();
-    ListView listItem;
-    private ArrayAdapter<String> ItemAdapter;
+    private AdapterItem adapterItem;
+    private ListView lvItem;
+    private ArrayList<ToDoItem> listItems;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +45,7 @@ public class DetailToDoActivity extends AppCompatActivity {
         // Liens avec les différents TextView et ListView de la vue
         txtTitle = findViewById(R.id.txtTitle);
         txtDate = findViewById(R.id.txtDate);
-        listItem = findViewById(R.id.listTodo);
+        lvItem = findViewById(R.id.listTodo);
 
         // Récupération de l'objet pour afficher les détails
         Intent itn = getIntent();
@@ -53,10 +55,10 @@ public class DetailToDoActivity extends AppCompatActivity {
         txtTitle.setText(todo.getTitle());
         txtDate.setText(todo.getEndDate().toString());
 
-        // Gestion de l'affichage pour la ListView
-        listItem = findViewById(R.id.listItem);
-        ItemAdapter = new ArrayAdapter(this, R.layout.list_item_todo, R.id.txtElement, listItems);
-        listItem.setAdapter(ItemAdapter);
+        listItems = new ArrayList<>();
+
+        // Met à jour la liste des tâches à faire pour la liste
+        updateList();
     }
 
     @Override
@@ -77,5 +79,33 @@ public class DetailToDoActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+
+    }
+
+    public void onClickCheckBox(View v){
+        View parent = (View) v.getParent();
+        CheckBox cbx = parent.findViewById(R.id.cbxChecked);
+        TextView nameItem = parent.findViewById(R.id.txtItem);
+
+        dbHelper.updateItemTodo(todo.getNumID(), cbx.isChecked(), nameItem.getText().toString());
+
+        updateList();
+    }
+
+    private void updateList(){
+        if (adapterItem != null) {
+            listItems.clear();
+            adapterItem.clear();
+        }
+
+        listItems = dbHelper.getListItem(todo.getNumID());
+        adapterItem = new AdapterItem(this, listItems);
+        lvItem.setAdapter(adapterItem);
     }
 }

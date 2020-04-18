@@ -4,9 +4,11 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -59,9 +61,9 @@ public class AddToDoActivity extends AppCompatActivity {
         edtElement = findViewById(R.id.edtElement);
 
         // Gestion de l'affichage pour la ListView
-        /*listItem = findViewById(R.id.listItem);
+        listItem = findViewById(R.id.listItem);
         mAdapter = new ArrayAdapter(this, R.layout.list_item_todo, R.id.txtElement, listItems);
-        listItem.setAdapter(mAdapter);*/
+        listItem.setAdapter(mAdapter);
     }
 
     @Override
@@ -69,6 +71,16 @@ public class AddToDoActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.add_todo_menu, menu);
         return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_libelle:
+                Intent itnLibelle = new Intent(AddToDoActivity.this, SelectTagsActivity.class);
+                startActivity(itnLibelle);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     // Méthode onClick pour l'ajout d'une date via l'interface d'un calendrier

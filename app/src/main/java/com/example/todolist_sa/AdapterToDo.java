@@ -33,9 +33,6 @@ public class AdapterToDo extends ArrayAdapter<ToDo> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_todo, parent, false);
         }
 
-        //LayoutInflater layoutInflater = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        //View toDoView = layoutInflater.inflate(R.layout.list_todo, parent, false);
-
         TextView title = convertView.findViewById(R.id.txtTitle);
         TextView description = convertView.findViewById(R.id.txtDescription);
         TextView date = convertView.findViewById(R.id.txtDate);
@@ -45,12 +42,9 @@ public class AdapterToDo extends ArrayAdapter<ToDo> {
         Integer cpt = 0;
         String str = "";
         for(ToDoItem item:toDo.getListItems()){
-            if(cpt < 5) {
+            if(cpt < 5 && !item.getCompleted()) {
                 str += "- " + item.getName() +"\n";
                 cpt++;
-            } else {
-                str += "..." + "\n";
-                break;
             }
         }
         description.setText(str);

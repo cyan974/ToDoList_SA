@@ -6,11 +6,11 @@ public class ToDoItem {
     private String name;
     private Boolean isCompleted;
 
-    public ToDoItem(Long numID, Long idToDo, String name){
+    public ToDoItem(Long numID, Long idToDo, String name, Boolean isCompleted){
         this.numID = numID;
         this.idToDo = idToDo;
         this.name = name;
-        this.isCompleted = false;
+        this.isCompleted = isCompleted;
     }
 
     public Long getNumID() {

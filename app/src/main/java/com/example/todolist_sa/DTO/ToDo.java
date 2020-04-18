@@ -15,6 +15,7 @@ public class ToDo implements Serializable {
     private Long tagID;
     private LocalDate endDate;
     private ArrayList<ToDoItem> listItems;
+    private ArrayList<Tag> listTags;
 
     public ToDo(Long numID, Long tag, String title, LocalDate endDate) {
         this.numID = numID;
@@ -22,10 +23,15 @@ public class ToDo implements Serializable {
         this.tagID = tag;
         this.endDate = endDate;
         this.listItems = new ArrayList<>();
+        this.listTags = new ArrayList<>();
     }
 
-    public void addItems(ToDoItem item){
+    public void addItem(ToDoItem item){
         this.listItems.add(item);
+    }
+
+    public void addTag(Tag tag) {
+        this.listTags.add(tag);
     }
 
     public Long getNumID() {
@@ -44,5 +50,9 @@ public class ToDo implements Serializable {
 
     public List<ToDoItem> getListItems() {
         return this.listItems;
+    }
+
+    public List<Tag> getListTags(){
+        return this.listTags;
     }
 }
