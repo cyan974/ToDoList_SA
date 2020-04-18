@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -18,23 +19,25 @@ import android.widget.ToggleButton;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.todolist_sa.DTO.ToDo;
 import com.example.todolist_sa.sqlite.DbHelper;
+
 
 import java.util.ArrayList;
 import java.util.Calendar;
 //Main
 public class MainActivity extends AppCompatActivity {
+    private static final int NOTIFICATION_ID = 0;
+    private static final String PRIMARY_CHANNEL_ID = "primary_channel_id";
+
     private DbHelper mHelper;
     private ListView lvToDo;
     private AdapterToDo adapter;
     private ArrayList<ToDo> arrayOfTodo;
-
     //Pour la notification d'alarme
     private NotificationManager mNotificationManager;
-    private static final int NOTIFICATION_ID = 0;
-    private static final String PRIMARY_CHANNEL_ID = "primary_channel_id";
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -74,8 +77,8 @@ public class MainActivity extends AppCompatActivity {
         simpleSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
-                    if (alarmManager != null){
+                if (isChecked) {
+                    if (alarmManager != null) {
                         Calendar calendar = Calendar.getInstance();
                         // référence à retravailler avec la date de fin de la liste
                         //calendar.set(Calendar.MONTH, COL_ENDATE.MONTH);
@@ -85,9 +88,8 @@ public class MainActivity extends AppCompatActivity {
                         alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
                         Toast.makeText(MainActivity.this, R.string.toast_message, Toast.LENGTH_LONG).show();
                     }
-                }
-                else{
-                    if (alarmManager != null){
+                } else {
+                    if (alarmManager != null) {
                         alarmManager.cancel(pendingIntent);
                         mNotificationManager.cancelAll();
                     }
@@ -96,12 +98,31 @@ public class MainActivity extends AppCompatActivity {
         });
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         createNotificationChannel();
+
+        //Color background Switch https://github.com/akafifty/DayNightTheme/blob/master/app/src/main/java/dnt/iso/com/daynighttheme/MainActivity.java
+
+
+        Switch switch1 = findViewById(R.id.backgroundSwitch);
+        switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+
+                    getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+
+                }else{
+                    getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                }
+            }
+
+
+        });
     }
 
     // méthode d'alarme
     private void createNotificationChannel() {
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel notificationChannel = new NotificationChannel(PRIMARY_CHANNEL_ID, getString(R.string.channel_name), NotificationManager.IMPORTANCE_HIGH);
             notificationChannel.enableLights(true);
             notificationChannel.setLightColor(Color.WHITE);
@@ -110,6 +131,9 @@ public class MainActivity extends AppCompatActivity {
             mNotificationManager.createNotificationChannel(notificationChannel);
         }
     }
+
+
+
 
     // Méthode qui s'exécute à chaque fois qu'on revient sur cette activité
     @RequiresApi(api = Build.VERSION_CODES.O)
