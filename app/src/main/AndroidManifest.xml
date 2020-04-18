@@ -18,8 +18,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AddToDoActivity" />
-        <activity android:name=".DetailToDoActivity" />
-        <activity android:name=".TagsActivity" />
+        <activity android:name=".AddToDoActivity"
+            android:parentActivityName=".MainActivity"/>
+        <activity android:name=".DetailToDoActivity"
+            android:parentActivityName=".MainActivity"/>
+        <activity android:name=".TagsActivity"
+            android:parentActivityName=".MainActivity"/>
     </application>
 </manifest>
