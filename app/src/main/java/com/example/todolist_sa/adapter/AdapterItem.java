@@ -1,4 +1,4 @@
-package com.example.todolist_sa;
+package com.example.todolist_sa.adapter;
 
 import android.content.Context;
 import android.graphics.Paint;
@@ -14,13 +14,14 @@ import androidx.annotation.Nullable;
 
 import com.example.todolist_sa.DTO.ToDo;
 import com.example.todolist_sa.DTO.ToDoItem;
+import com.example.todolist_sa.R;
 
 import java.util.ArrayList;
 
 public class AdapterItem extends ArrayAdapter<ToDoItem> {
     Context context;
 
-    AdapterItem(Context c, ArrayList<ToDoItem> itemList){
+    public AdapterItem(Context c, ArrayList<ToDoItem> itemList){
         super(c, 0, itemList);
         this.context = c;
     }

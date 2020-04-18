@@ -1,9 +1,8 @@
-package com.example.todolist_sa;
+package com.example.todolist_sa.activity;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +13,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.todolist_sa.DTO.ToDo;
+import com.example.todolist_sa.R;
+import com.example.todolist_sa.adapter.AdapterToDo;
 import com.example.todolist_sa.sqlite.DbHelper;
 
 import java.util.ArrayList;
@@ -99,15 +100,4 @@ public class MainActivity extends AppCompatActivity {
         adapter = new AdapterToDo(this, arrayOfTodo);
         lvToDo.setAdapter(adapter);
     }
-
-    /*@RequiresApi(api = Build.VERSION_CODES.O)
-    public void deleteTask(View view) {
-        View parent = (View) view.getParent();
-        TextView taskTextView = parent.findViewById(R.id.txtTitle);
-
-        String task = String.valueOf(taskTextView.getText());
-        mHelper.deleteToDoByTitle(task);
-        updateList();
-    }*/
-
 }

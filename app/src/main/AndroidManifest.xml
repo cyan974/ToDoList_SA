@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".MainActivity"
+        <activity android:name=".activity.MainActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -18,13 +18,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AddToDoActivity"
-            android:parentActivityName=".MainActivity"/>
-        <activity android:name=".DetailToDoActivity"
-            android:parentActivityName=".MainActivity"/>
-        <activity android:name=".TagsActivity"
-            android:parentActivityName=".MainActivity"/>
-        <activity android:name=".SelectTagsActivity"
-            android:parentActivityName=".AddToDoActivity"/>
+        <activity android:name=".activity.AddToDoActivity"
+            android:parentActivityName=".activity.MainActivity"/>
+        <activity android:name=".activity.DetailToDoActivity"
+            android:parentActivityName=".activity.MainActivity"/>
+        <activity android:name=".activity.TagsActivity"
+            android:parentActivityName=".activity.MainActivity"/>
+        <activity android:name=".activity.SelectTagsActivity"
+            android:parentActivityName=".activity.AddToDoActivity"/>
     </application>
 </manifest>

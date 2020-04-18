@@ -1,4 +1,4 @@
-package com.example.todolist_sa;
+package com.example.todolist_sa.activity;
 
 import android.os.Bundle;
 import android.view.View;
@@ -11,6 +11,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.todolist_sa.DTO.Tag;
+import com.example.todolist_sa.R;
 import com.example.todolist_sa.sqlite.DbHelper;
 
 import java.util.ArrayList;

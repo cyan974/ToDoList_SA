@@ -1,4 +1,4 @@
-package com.example.todolist_sa;
+package com.example.todolist_sa.activity;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -22,6 +22,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.todolist_sa.DTO.ToDo;
+import com.example.todolist_sa.R;
 import com.example.todolist_sa.sqlite.DbHelper;
 
 import java.time.LocalDate;
