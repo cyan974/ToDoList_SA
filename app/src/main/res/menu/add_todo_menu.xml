@@ -15,7 +15,4 @@
         android:checked="false"
         android:icon="@android:drawable/ic_input_get"
         android:title="Libellés" />
-    <item
-        android:id="@+id/action_color"
-        android:title="Choisir une couleur" />
 </menu>

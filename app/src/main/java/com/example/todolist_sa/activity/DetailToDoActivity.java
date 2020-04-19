@@ -20,6 +20,7 @@ import android.widget.TextView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.todolist_sa.DTO.Tag;
 import com.example.todolist_sa.DTO.ToDo;
@@ -77,11 +78,12 @@ public class DetailToDoActivity extends AppCompatActivity {
         txtTags = findViewById(R.id.txtTags);
         lblTag = findViewById(R.id.lblTags);
 
-
-
         // Récupération de l'objet pour afficher les détails
         Intent itn = getIntent();
         todo = (ToDo)itn.getSerializableExtra("TODO");
+
+        // Met en place la couleur
+        getWindow().getDecorView().setBackgroundColor(getResources().getColor(todo.getBgColor()));
 
         // Mise en place de l'affichage
         setupInfos();
@@ -194,6 +196,7 @@ public class DetailToDoActivity extends AppCompatActivity {
                         }
                     }
                 }, mYear, mMonth, mDay);
+        datePickerDialog.getDatePicker().setMinDate(c.getTimeInMillis());
         datePickerDialog.show();
     }
 

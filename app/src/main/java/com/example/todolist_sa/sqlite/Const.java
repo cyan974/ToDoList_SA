@@ -14,6 +14,7 @@ public class Const {
         public static final String COL_FK_TAG = "fk_tags";
         public static final String COL_ENDDATE = "endDate";
         public static final String COL_IMG = "img";
+        public static final String COL_BGCOLOR = "color";
     }
 
     /* Classe intérieure qui définit le contenu de la table ToDoItem */

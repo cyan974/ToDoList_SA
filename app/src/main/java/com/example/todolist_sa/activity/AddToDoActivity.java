@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -43,6 +44,8 @@ public class AddToDoActivity extends AppCompatActivity {
     private EditText edtElement;
     private TextView txtDate;
     private TextView txtTags;
+    private TextView lblLibelle;
+    private Button btnColor;
 
     private LocalDate endDate;
 
@@ -64,6 +67,10 @@ public class AddToDoActivity extends AppCompatActivity {
         txtDate = findViewById(R.id.txtDate);
         edtElement = findViewById(R.id.edtElement);
         txtTags = findViewById(R.id.txtTags);
+        lblLibelle = findViewById(R.id.lblLibelle);
+        btnColor = findViewById(R.id.btnColor);
+
+        lblLibelle.setVisibility(View.INVISIBLE);
 
         // Gestion de l'affichage pour la ListView
         lvItem = findViewById(R.id.listItem);
@@ -116,6 +123,7 @@ public class AddToDoActivity extends AppCompatActivity {
             todo.setEndDate(endDate);
 
         if(listItems.size() > 0) {
+            todo.getListItems().clear();
             for(String item : listItems){
                 todo.addItem(new ToDoItem(item));
             }
@@ -146,8 +154,17 @@ public class AddToDoActivity extends AppCompatActivity {
 
         if(todo.getListTags().size() > 0){
             String strTags ="";
+            Integer cpt = 0;
+            lblLibelle.setVisibility(View.VISIBLE);
             for(Tag tag:todo.getListTags()){
                 strTags += "(" + tag.getLibelle() + ") ";
+                cpt++;
+            }
+
+            if (cpt > 1) {
+                lblLibelle.setText("Libellés :");
+            } else {
+                lblLibelle.setText("Libellé :");
             }
 
             txtTags.setText(strTags);
@@ -181,6 +198,7 @@ public class AddToDoActivity extends AppCompatActivity {
 
                     }
                 }, mYear, mMonth, mDay);
+        datePickerDialog.getDatePicker().setMinDate(c.getTimeInMillis());
         datePickerDialog.show();
     }
 
@@ -202,12 +220,65 @@ public class AddToDoActivity extends AppCompatActivity {
         mAdapter.notifyDataSetChanged();
     }
 
+    public void onClickChooseColor(View v){
+        final View customLayout = getLayoutInflater().inflate(R.layout.list_color, null);
+
+        AlertDialog alert = new AlertDialog.Builder(AddToDoActivity.this).create();
+        alert.setTitle("Choisir une couleur");
+        alert.setIcon(R.drawable.logo);
+        alert.setView(customLayout);
+        alert.setButton(Dialog.BUTTON_POSITIVE,"OK",new DialogInterface.OnClickListener(){
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        alert.setButton(Dialog.BUTTON_NEGATIVE,"Réinitialiser",new DialogInterface.OnClickListener(){
+
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                btnColor.setBackground(getResources().getDrawable(R.drawable.circle_white));
+                todo.setBgColor(R.color.colorWhite);
+            }
+        });
+        alert.show();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    public void onClickColor(View v){
+        switch (v.getId()) {
+            case R.id.btnBlue:
+                btnColor.setBackground(getResources().getDrawable(R.drawable.circle_blue));
+                todo.setBgColor(R.color.blue);
+                break;
+
+            case R.id.btnGrey:
+                btnColor.setBackground(getResources().getDrawable(R.drawable.circle_grey));
+                todo.setBgColor(R.color.grey);
+                break;
+
+            case R.id.btnRed:
+                btnColor.setBackground(getResources().getDrawable(R.drawable.circle_red));
+                todo.setBgColor(R.color.red);
+                break;
+
+            case R.id.btnPurple:
+                btnColor.setBackground(getResources().getDrawable(R.drawable.circle_purple));
+                todo.setBgColor(R.color.purple);
+                break;
+        }
+
+    }
+
     // Action du bouton flottant qui ajoute la liste de tâche avec ses différents éléments
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void onClickAdd(View v){
         saveInfo();
         if(todo.getTitle() != null && todo.getEndDate() != null){
-            if(dbHelper.addToDo(todo.getTitle(), todo.getEndDate())){
+            if(dbHelper.addToDo(todo.getTitle(), todo.getEndDate(), todo.getBgColor())){
 
                 // Récupère la tâche créée pour avoir l'ID
                 ToDo toDo = dbHelper.searchTodoByTitle(todo.getTitle());

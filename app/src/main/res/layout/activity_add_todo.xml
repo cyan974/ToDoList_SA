@@ -73,7 +73,7 @@
         android:layout_marginRight="15dp"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView"
+        app:layout_constraintStart_toEndOf="@+id/lblLibelle"
         app:layout_constraintTop_toBottomOf="@+id/lblDate" />
 
     <ListView
@@ -106,6 +106,14 @@
             android:onClick="onClickAdd"
             app:backgroundTint="@color/colorPrimary"
             app:srcCompat="@drawable/ic_add_task" />
+
+        <Button
+            android:id="@+id/btnColor"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="16dp"
+            android:background="@drawable/circle_white"
+            android:onClick="onClickChooseColor" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <EditText
@@ -140,7 +148,7 @@
         app:srcCompat="@android:drawable/ic_input_add" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/lblLibelle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"

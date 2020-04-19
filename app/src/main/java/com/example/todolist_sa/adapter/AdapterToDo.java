@@ -1,14 +1,20 @@
 package com.example.todolist_sa.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.todolist_sa.DTO.Tag;
 import com.example.todolist_sa.DTO.ToDo;
@@ -25,6 +31,7 @@ public class AdapterToDo extends ArrayAdapter<ToDo> {
         this.context = c;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -39,7 +46,12 @@ public class AdapterToDo extends ArrayAdapter<ToDo> {
         TextView description = convertView.findViewById(R.id.txtDescription);
         TextView date = convertView.findViewById(R.id.txtDate);
         TextView tags = convertView.findViewById(R.id.txtTags);
+        CardView cardView = convertView.findViewById(R.id.cvTodo);
 
+        // Met en place la couleur de fond
+        cardView.setCardBackgroundColor(context.getResources().getColor(toDo.getBgColor()));
+
+        // Met en place le titre
         title.setText(toDo.getTitle());
 
         // Formatage pour la description
@@ -60,6 +72,7 @@ public class AdapterToDo extends ArrayAdapter<ToDo> {
         }
         tags.setText(str);
 
+        // Met en place la date
         date.setText(toDo.getEndDate().toString());
         return convertView;
     }

@@ -3,6 +3,8 @@ package com.example.todolist_sa.DTO;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.example.todolist_sa.R;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ public class ToDo implements Serializable {
     private String title;
     private Long tagID;
     private LocalDate endDate;
+    private Integer bgColor;
     private ArrayList<ToDoItem> listItems;
     private ArrayList<Tag> listTags;
 
@@ -22,15 +25,17 @@ public class ToDo implements Serializable {
         this.title = null;
         this.tagID = null;
         this.endDate = null;
+        this.bgColor = R.color.colorWhite;
         this.listItems = new ArrayList<>();
         this.listTags = new ArrayList<>();
     }
 
-    public ToDo(Long numID, Long tag, String title, LocalDate endDate) {
+    public ToDo(Long numID, Long tag, String title, LocalDate endDate, Integer bgColor) {
         this.numID = numID;
         this.title = title;
         this.tagID = tag;
         this.endDate = endDate;
+        this.bgColor = bgColor;
         this.listItems = new ArrayList<>();
         this.listTags = new ArrayList<>();
     }
@@ -91,5 +96,17 @@ public class ToDo implements Serializable {
 
     public void setListTags(ArrayList<Tag> listTags) {
         this.listTags = listTags;
+    }
+
+    public Long getTagID() {
+        return tagID;
+    }
+
+    public Integer getBgColor() {
+        return bgColor;
+    }
+
+    public void setBgColor(Integer bgColor) {
+        this.bgColor = bgColor;
     }
 }

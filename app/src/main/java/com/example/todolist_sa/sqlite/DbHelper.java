@@ -30,7 +30,9 @@ public class DbHelper extends SQLiteOpenHelper {
                     Const.TodoEntry.COL_TITLE + " TEXT NOT NULL UNIQUE," +
                     Const.TodoEntry.COL_FK_TAG + " INTEGER," +
                     Const.TodoEntry.COL_ENDDATE + " DATE," +
-                    Const.TodoEntry.COL_IMG + " TEXT " + ")";
+                    Const.TodoEntry.COL_IMG + " TEXT," +
+                    Const.TodoEntry.COL_BGCOLOR + " INTEGER " +
+                    ")";
 
     // Création de la requête SQL pour créer la table ToDoItem
     private static final String CREATE_TODO_ITEM =
@@ -100,13 +102,14 @@ public class DbHelper extends SQLiteOpenHelper {
 
     // Méthode pour ajouter des tâches dans la table ToDo
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public Boolean addToDo(String title, LocalDate endDate){
+    public Boolean addToDo(String title, LocalDate endDate, Integer bgColor){
         db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(Const.TodoEntry.COL_TITLE, title);
         values.put(Const.TodoEntry.COL_FK_TAG, 0);
         values.put(Const.TodoEntry.COL_ENDDATE, endDate.toString());
+        values.put(Const.TodoEntry.COL_BGCOLOR, bgColor);
 
         Long res = db.insert(Const.TodoEntry.TABLE_NAME, null, values);
 
@@ -210,7 +213,9 @@ public class DbHelper extends SQLiteOpenHelper {
                     queryRes.getLong(queryRes.getColumnIndex(Const.TodoEntry._ID)),
                     queryRes.getLong(queryRes.getColumnIndex(Const.TodoEntry.COL_FK_TAG)),
                     queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_TITLE)),
-                    LocalDate.parse(queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_ENDDATE))));
+                    LocalDate.parse(queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_ENDDATE))),
+                    queryRes.getInt(queryRes.getColumnIndex(Const.TodoEntry.COL_BGCOLOR))
+                    );
 
             toDo.setListItems(getListItemByTodo(toDo.getNumID()));
             toDo.setListTags(getListTagByTodo(toDo.getNumID()));
@@ -236,7 +241,9 @@ public class DbHelper extends SQLiteOpenHelper {
                     queryRes.getLong(queryRes.getColumnIndex(Const.TodoEntry._ID)),
                     queryRes.getLong(queryRes.getColumnIndex(Const.TodoEntry.COL_FK_TAG)),
                     queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_TITLE)),
-                    LocalDate.parse(queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_ENDDATE))));
+                    LocalDate.parse(queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_ENDDATE))),
+                    queryRes.getInt(queryRes.getColumnIndex(Const.TodoEntry.COL_BGCOLOR))
+            );
         } else {
             queryRes.close();
             db.close();
@@ -291,7 +298,9 @@ public class DbHelper extends SQLiteOpenHelper {
                         queryRes.getLong(queryRes.getColumnIndex(Const.TodoEntry._ID)),
                         queryRes.getLong(queryRes.getColumnIndex(Const.TodoEntry.COL_FK_TAG)),
                         queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_TITLE)),
-                        LocalDate.parse(queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_ENDDATE))));
+                        LocalDate.parse(queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_ENDDATE))),
+                        queryRes.getInt(queryRes.getColumnIndex(Const.TodoEntry.COL_BGCOLOR))
+                );
 
                 toDo.setListItems(getListItemByTodo(toDo.getNumID()));
 
@@ -443,7 +452,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    /*@RequiresApi(api = Build.VERSION_CODES.O)
     public void insertFakeData(){
 
         // Tâches
@@ -466,5 +475,5 @@ public class DbHelper extends SQLiteOpenHelper {
         addTag("Maison");
         addTag("Enfant");
 
-    }
+    }*/
 }
