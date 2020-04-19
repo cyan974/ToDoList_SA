@@ -1,4 +1,4 @@
-package com.example.todolist_sa;
+package com.example.todolist_sa.activity;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -8,6 +8,8 @@ import android.content.Intent;
 
 
 import androidx.core.app.NotificationCompat;
+
+import com.example.todolist_sa.R;
 
 public class AlarmReceiver extends BroadcastReceiver {
     private NotificationManager mNotificationManager;
