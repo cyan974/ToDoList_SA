@@ -7,8 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.os.PersistableBundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,12 +15,11 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.todolist_sa.DTO.Tag;
@@ -34,13 +31,10 @@ import com.example.todolist_sa.sqlite.DbHelper;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 public class AddToDoActivity extends AppCompatActivity {
     private DbHelper dbHelper;
     private DatePickerDialog datePickerDialog;
-
-    private ArrayList<Tag> listTags;
 
     private ArrayList<String> listItems;
     private ListView lvItem;
@@ -65,19 +59,18 @@ public class AddToDoActivity extends AppCompatActivity {
 
         dbHelper = new DbHelper(this);
 
+        todo = new ToDo();
+
         edtTitre = findViewById(R.id.edtTitre);
         txtDate = findViewById(R.id.txtDate);
         edtElement = findViewById(R.id.edtElement);
         txtTags = findViewById(R.id.txtTags);
-
-        listTags = new ArrayList<>();
 
         // Gestion de l'affichage pour la ListView
         lvItem = findViewById(R.id.listItem);
         listItems = new ArrayList<>();
         mAdapter = new ArrayAdapter(this, R.layout.list_item_todo, R.id.txtElement, listItems);
         lvItem.setAdapter(mAdapter);
-
     }
 
     @Override
@@ -93,7 +86,6 @@ public class AddToDoActivity extends AppCompatActivity {
             case R.id.action_libelle:
                 saveInfo();
                 Intent itnLibelle = new Intent(AddToDoActivity.this, SelectTagsActivity.class);
-                itnLibelle.putExtra("LIST_TAG", listTags);
                 itnLibelle.putExtra("TODO", todo);
 
                 startActivityForResult(itnLibelle,1);
@@ -109,7 +101,7 @@ public class AddToDoActivity extends AppCompatActivity {
         // Récupération des informations de l'activité pour les libellés
         if(requestCode == 1){
             if(resultCode == RESULT_OK){
-                //todo = (ToDo) data.getSerializableExtra("TODO");
+                todo = (ToDo) data.getSerializableExtra("TODO");
                 restoreInfo();
             }
         }
@@ -118,23 +110,21 @@ public class AddToDoActivity extends AppCompatActivity {
     // Méthode pour sauvegarder les informations dans un objet
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void saveInfo(){
-        String title = null;
-        LocalDate dateEnd = null;
-        ArrayList<ToDoItem> itemsList = new ArrayList<>();
-
         if(edtTitre.getText().toString().length() > 0)
-            title = edtTitre.getText().toString();
+            todo.setTitle(edtTitre.getText().toString());
 
         if(txtDate.getText().toString().length() > 0)
-            dateEnd = endDate;
+            todo.setEndDate(endDate);
 
         if(listItems.size() > 0) {
             for(String item : listItems){
-                itemsList.add(new ToDoItem(item));
+                todo.addItem(new ToDoItem(item));
             }
         }
 
-        todo = new ToDo(title, dateEnd, itemsList);
+        if(txtTags.getText().toString().length() > 0){
+
+        }
     }
 
     // Méthode pour réafficher les infos dans l'activity
@@ -147,12 +137,21 @@ public class AddToDoActivity extends AppCompatActivity {
             txtDate.setText(todo.getEndDate().toString());
         }
 
-        if(todo.getListItems() != null){
+        if(todo.getListItems().size() > 0){
             listItems.clear();
             for(ToDoItem item:todo.getListItems()){
                 listItems.add(item.getName());
             }
             mAdapter.notifyDataSetChanged();
+        }
+
+        if(todo.getListTags().size() > 0){
+            String strTags ="";
+            for(Tag tag:todo.getListTags()){
+                strTags += tag.getLibelle() + " / ";
+            }
+
+            txtTags.setText(strTags);
         }
     }
 
@@ -208,18 +207,20 @@ public class AddToDoActivity extends AppCompatActivity {
     // Action du bouton flottant qui ajoute la liste de tâche avec ses différents éléments
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void onClickAdd(View v){
-        if(edtTitre.getText().toString().length() > 0 && txtDate.getText().toString() != ""){
-            if(dbHelper.addToDo(edtTitre.getText().toString(), endDate)){
-            ToDo toDo = dbHelper.searchTodoByTitle(edtTitre.getText().toString());
-                for(String name:listItems){
-                    Boolean res = dbHelper.addToDoItem(toDo.getNumID(), name);
+        saveInfo();
+        if(todo.getTitle() != null && todo.getEndDate() != null){
+            if(dbHelper.addToDo(todo.getTitle(), todo.getEndDate())){
+                ToDo toDo = dbHelper.searchTodoByTitle(todo.getTitle());
+
+                for(ToDoItem item:todo.getListItems()){
+                    Boolean res = dbHelper.addToDoItem(toDo.getNumID(), item.getName());
                 }
 
-                for(Tag tag:listTags){
+                for(Tag tag:todo.getListTags()){
                     Boolean res = dbHelper.addTag_Todo(tag.getNumID(), toDo.getNumID());
                 }
             } else {
-                // Afficher une erreur lors de l'ajout
+                // Afficher une erreur lors de l'ajout si nécessaire
             }
 
             finish();

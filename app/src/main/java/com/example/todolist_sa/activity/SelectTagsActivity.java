@@ -63,7 +63,6 @@ public class SelectTagsActivity extends AppCompatActivity {
     }
 
     private void initializeList(){
-
         listTags = dbHelper.getListTag();
 
         adapter = new AdapterTags(this, listTags);
@@ -79,9 +78,11 @@ public class SelectTagsActivity extends AppCompatActivity {
         Tag tag = dbHelper.searchTagByName(txtTag.getText().toString());
 
         if(cbxSelect.isChecked()){
-            listTagsAdd.add(tag);
+            //listTagsAdd.add(tag);
+            todo.addTag(tag);
         } else {
-            listTagsAdd.remove(tag);
+            //listTagsAdd.remove(tag);
+            todo.removeTag(tag);
         }
     }
 
