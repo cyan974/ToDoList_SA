@@ -1,11 +1,15 @@
 package com.example.todolist_sa.activity;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -54,9 +58,7 @@ public class DetailToDoActivity extends AppCompatActivity {
         editTitle = findViewById(R.id.editTitle);
         editDate = findViewById(R.id.editDate);
 
-        // Cache les éléments pour modifier la tâche
-        editTitle.setVisibility(View.INVISIBLE);
-        editDate.setVisibility(View.INVISIBLE);
+        //hideEdit();
 
         // Récupération de l'objet pour afficher les détails
         Intent itn = getIntent();
@@ -111,6 +113,29 @@ public class DetailToDoActivity extends AppCompatActivity {
         updateList();
     }
 
+    public void onClickEditTitle(View v){
+        final EditText input = new EditText(DetailToDoActivity.this);
+
+        AlertDialog alert = new AlertDialog.Builder(DetailToDoActivity.this).create();
+        alert.setTitle("Modification du titre");
+        alert.setIcon(R.drawable.logo);
+        alert.setView(input);
+        alert.setButton(Dialog.BUTTON_POSITIVE,"Valider",new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        alert.setButton(Dialog.BUTTON_NEGATIVE,"Annuler",new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        alert.show();
+    }
+
     private void updateList(){
         if (adapterItem != null) {
             listItems.clear();
@@ -120,5 +145,11 @@ public class DetailToDoActivity extends AppCompatActivity {
         listItems = dbHelper.getListItem(todo.getNumID());
         adapterItem = new AdapterItem(this, listItems);
         lvItem.setAdapter(adapterItem);
+    }
+
+    private void hideEdit(){
+        // Cache les éléments pour modifier la tâche
+        editTitle.setVisibility(View.INVISIBLE);
+        editDate.setVisibility(View.INVISIBLE);
     }
 }

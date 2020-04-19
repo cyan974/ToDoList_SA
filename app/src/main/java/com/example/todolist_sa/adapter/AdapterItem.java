@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -38,6 +39,9 @@ public class AdapterItem extends ArrayAdapter<ToDoItem> {
 
         TextView name = convertView.findViewById(R.id.txtItem);
         CheckBox checkBox = convertView.findViewById(R.id.cbxChecked);
+        ImageView editItem = convertView.findViewById(R.id.editItem);
+
+        //editItem.setVisibility(View.INVISIBLE);
 
         name.setText(itemTodo.getName());
 
