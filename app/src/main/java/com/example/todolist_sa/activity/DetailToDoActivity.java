@@ -142,7 +142,7 @@ public class DetailToDoActivity extends AppCompatActivity {
             adapterItem.clear();
         }
 
-        listItems = dbHelper.getListItem(todo.getNumID());
+        listItems = dbHelper.getListItemByTodo(todo.getNumID());
         adapterItem = new AdapterItem(this, listItems);
         lvItem.setAdapter(adapterItem);
     }

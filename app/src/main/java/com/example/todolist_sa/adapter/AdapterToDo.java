@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.todolist_sa.DTO.Tag;
 import com.example.todolist_sa.DTO.ToDo;
 import com.example.todolist_sa.DTO.ToDoItem;
 import com.example.todolist_sa.R;
@@ -37,6 +38,7 @@ public class AdapterToDo extends ArrayAdapter<ToDo> {
         TextView title = convertView.findViewById(R.id.txtTitle);
         TextView description = convertView.findViewById(R.id.txtDescription);
         TextView date = convertView.findViewById(R.id.txtDate);
+        TextView tags = convertView.findViewById(R.id.txtTags);
 
         title.setText(toDo.getTitle());
 
@@ -49,6 +51,16 @@ public class AdapterToDo extends ArrayAdapter<ToDo> {
             }
         }
         description.setText(str);
+
+        cpt = 0;
+        str = "";
+        for(Tag tag:toDo.getListTags()){
+            if(cpt < 5) {
+                str += "- " + tag.getLibelle() +"\n";
+                cpt++;
+            }
+        }
+        tags.setText(str);
 
         date.setText(toDo.getEndDate().toString());
         return convertView;

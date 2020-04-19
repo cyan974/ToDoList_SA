@@ -175,8 +175,7 @@ public class AddToDoActivity extends AppCompatActivity {
 
                         endDate = LocalDate.of(year,monthOfYear+1,dayOfMonth);
 
-                        txtDate.setText(dayOfMonth + "/"
-                                + (monthOfYear + 1) + "/" + year);
+                        txtDate.setText(year + "-" + (monthOfYear+1) + "-" + dayOfMonth);
 
                         //cDate.set(year,monthOfYear,dayOfMonth);
 
