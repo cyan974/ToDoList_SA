@@ -5,6 +5,8 @@
     android:layout_height="wrap_content"
     android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground"
+    android:background="@android:color/background_dark"
+    android:alpha="0"
     android:onClick="viewTask"
     card_view:cardCornerRadius="10dp"
     card_view:cardElevation="8dp">
@@ -40,9 +42,9 @@
             android:id="@+id/txtDescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginStart="28dp"
+            android:layout_marginLeft="28dp"
+            android:layout_marginTop="4dp"
             android:text="Description"
             android:textSize="14sp"
             card_view:layout_constraintStart_toEndOf="@+id/imgCard"
@@ -69,5 +71,15 @@
             android:textStyle="italic"
             card_view:layout_constraintBottom_toBottomOf="parent"
             card_view:layout_constraintEnd_toEndOf="parent" />
+
+        <Switch
+            android:id="@+id/toggleButton"
+            android:layout_width="108dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:text="@string/notify_me"
+            card_view:layout_constraintStart_toEndOf="@+id/imgCard"
+            card_view:layout_constraintTop_toBottomOf="@+id/txtDescription" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
