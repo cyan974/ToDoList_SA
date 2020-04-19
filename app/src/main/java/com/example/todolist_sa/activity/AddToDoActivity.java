@@ -147,7 +147,7 @@ public class AddToDoActivity extends AppCompatActivity {
         if(todo.getListTags().size() > 0){
             String strTags ="";
             for(Tag tag:todo.getListTags()){
-                strTags += tag.getLibelle() + " / ";
+                strTags += "(" + tag.getLibelle() + ") ";
             }
 
             txtTags.setText(strTags);

@@ -42,6 +42,7 @@ public class AdapterToDo extends ArrayAdapter<ToDo> {
 
         title.setText(toDo.getTitle());
 
+        // Formatage pour la description
         Integer cpt = 0;
         String str = "";
         for(ToDoItem item:toDo.getListItems()){
@@ -52,13 +53,10 @@ public class AdapterToDo extends ArrayAdapter<ToDo> {
         }
         description.setText(str);
 
-        cpt = 0;
+        // Formatage pour les tags
         str = "";
         for(Tag tag:toDo.getListTags()){
-            if(cpt < 5) {
-                str += "- " + tag.getLibelle() +"\n";
-                cpt++;
-            }
+            str += "(" + tag.getLibelle() + ") ";
         }
         tags.setText(str);
 

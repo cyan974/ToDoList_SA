@@ -206,11 +206,16 @@ public class DbHelper extends SQLiteOpenHelper {
 
         if(queryRes.moveToFirst()){
             db.close();
-            return new ToDo(
+            ToDo toDo = new ToDo(
                     queryRes.getLong(queryRes.getColumnIndex(Const.TodoEntry._ID)),
                     queryRes.getLong(queryRes.getColumnIndex(Const.TodoEntry.COL_FK_TAG)),
                     queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_TITLE)),
                     LocalDate.parse(queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_ENDDATE))));
+
+            toDo.setListItems(getListItemByTodo(toDo.getNumID()));
+            toDo.setListTags(getListTagByTodo(toDo.getNumID()));
+
+            return toDo;
 
         } else {
             db.close();
@@ -262,6 +267,16 @@ public class DbHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void deleteItemTodo(String itemName, Long idTodo){
+        db = this.getWritableDatabase();
+
+        // Suppression des éléments liés à la tâche
+        db.delete(Const.TodoItemEntry.TABLE_NAME,
+                Const.TodoItemEntry.COL_FK_TODO + " = ? AND " + Const.TodoItemEntry.COL_NAME + " = ?",
+                new String[]{idTodo.toString(), itemName});
+
+        db.close();
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public ArrayList<ToDo> getListToDo(){
@@ -356,7 +371,7 @@ public class DbHelper extends SQLiteOpenHelper {
         return listTags;
     }
 
-    public void updateItemTodo(Long id, Boolean checked, String nameItem){
+    public void updateCheckedItemTodo(Long id, Boolean checked, String nameItem){
         SQLiteDatabase db = this.getWritableDatabase();
 
         Integer isChecked;
@@ -384,6 +399,46 @@ public class DbHelper extends SQLiteOpenHelper {
         db.update(Const.TagsEntry.TABLE_NAME, values,
                 Const.TagsEntry.COL_LIBELLE + " = ?",
                 new String[] {oldName});
+
+        db.close();
+    }
+
+    public void updateTitleTodo(String oldTitle, String newTitle){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(Const.TodoEntry.COL_TITLE, newTitle);
+
+        db.update(Const.TodoEntry.TABLE_NAME, values,
+                Const.TodoEntry.COL_TITLE + " = ?",
+                new String[] {oldTitle});
+
+        db.close();
+    }
+
+    public void updateEndDateTodo(LocalDate endDate, Long idTodo) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(Const.TodoEntry.COL_ENDDATE, endDate.toString());
+
+        db.update(Const.TodoEntry.TABLE_NAME, values,
+                Const.TodoEntry._ID + " = ?",
+                new String[] {idTodo.toString()});
+
+        db.close();
+    }
+
+    public void updateNameItemTodo(String oldName, String newName, Long idTodo){
+        db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(Const.TodoItemEntry.COL_NAME, newName);
+
+        // Suppression des éléments liés à la tâche
+        db.update(Const.TodoItemEntry.TABLE_NAME, values,
+                Const.TodoItemEntry.COL_FK_TODO + " = ? AND " + Const.TodoItemEntry.COL_NAME + " = ?",
+                new String[]{idTodo.toString(), oldName});
 
         db.close();
     }

@@ -73,14 +73,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Méthode qui appelle une vue pour créer une tâche
-    public void addTask(View v){
+    public void onClickAddTask(View v){
         Intent itnAddTask = new Intent(MainActivity.this, AddToDoActivity.class);
         startActivity(itnAddTask);
     }
 
     // Méthode qui appelle une vue pour visualiser les informations d'une tâche
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void viewTask(View v){
+    public void onClickDetailTask(View v){
         TextView title = v.findViewById(R.id.txtTitle);
         ToDo todo = mHelper.searchTodoByTitle(title.getText().toString());
 
