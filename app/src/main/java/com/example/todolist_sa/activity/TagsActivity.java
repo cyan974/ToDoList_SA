@@ -1,5 +1,8 @@
 package com.example.todolist_sa.activity;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -62,6 +65,39 @@ public class TagsActivity extends AppCompatActivity {
 
         dbHelper.deleteTag(ele.getText().toString());
         updateList();
+    }
+
+    public void onClickEditTag(View v){
+        View parent = (View) v.getParent();
+        TextView ele = parent.findViewById(R.id.txtTag);
+        final String oldTag = ele.getText().toString();
+
+        final EditText input = new EditText(TagsActivity.this);
+        input.setText(oldTag);
+
+        AlertDialog alert = new AlertDialog.Builder(TagsActivity.this).create();
+        alert.setTitle("Modification du libellé");
+        alert.setIcon(R.drawable.logo);
+        alert.setView(input);
+        alert.setButton(Dialog.BUTTON_POSITIVE,"Valider",new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String newTag = input.getText().toString();
+
+                if(!oldTag.equals(newTag)){
+                    dbHelper.updateTag(oldTag, newTag);
+                    updateList();
+                }
+            }
+        });
+
+        alert.setButton(Dialog.BUTTON_NEGATIVE,"Annuler",new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        alert.show();
     }
 
     public void updateList(){

@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -31,6 +32,8 @@ public class DetailToDoActivity extends AppCompatActivity {
     private ListView lvItem;
     private ArrayList<ToDoItem> listItems;
 
+    private ImageView editTitle;
+    private ImageView editDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +51,12 @@ public class DetailToDoActivity extends AppCompatActivity {
         txtTitle = findViewById(R.id.txtTitle);
         txtDate = findViewById(R.id.txtDate);
         lvItem = findViewById(R.id.listTodo);
+        editTitle = findViewById(R.id.editTitle);
+        editDate = findViewById(R.id.editDate);
+
+        // Cache les éléments pour modifier la tâche
+        editTitle.setVisibility(View.INVISIBLE);
+        editDate.setVisibility(View.INVISIBLE);
 
         // Récupération de l'objet pour afficher les détails
         Intent itn = getIntent();
@@ -75,6 +84,10 @@ public class DetailToDoActivity extends AppCompatActivity {
             case R.id.action_edit:
                 return true;
 
+            case R.id.home:
+                onBackPressed();
+                return true;
+
             case R.id.action_delete:
                 dbHelper.deleteToDoById(todo.getNumID());
                 finish();
@@ -84,10 +97,8 @@ public class DetailToDoActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     public void onClickCheckBox(View v){

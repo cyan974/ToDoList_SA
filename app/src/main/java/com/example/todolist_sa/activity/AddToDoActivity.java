@@ -15,7 +15,6 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 import androidx.annotation.Nullable;
@@ -210,12 +209,18 @@ public class AddToDoActivity extends AppCompatActivity {
         saveInfo();
         if(todo.getTitle() != null && todo.getEndDate() != null){
             if(dbHelper.addToDo(todo.getTitle(), todo.getEndDate())){
+
+                // Récupère la tâche créée pour avoir l'ID
                 ToDo toDo = dbHelper.searchTodoByTitle(todo.getTitle());
 
-                for(ToDoItem item:todo.getListItems()){
-                    Boolean res = dbHelper.addToDoItem(toDo.getNumID(), item.getName());
+                // Insère les items (la liste des tâches à faire) dans la BDD
+                if(todo.getListItems().size() > 0){
+                    for(ToDoItem item:todo.getListItems()){
+                        Boolean res = dbHelper.addToDoItem(toDo.getNumID(), item.getName());
+                    }
                 }
 
+                // Lie les tags (libellés) avec la liste de tâche
                 for(Tag tag:todo.getListTags()){
                     Boolean res = dbHelper.addTag_Todo(tag.getNumID(), toDo.getNumID());
                 }

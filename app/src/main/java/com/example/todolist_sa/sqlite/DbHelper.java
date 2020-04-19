@@ -331,7 +331,6 @@ public class DbHelper extends SQLiteOpenHelper {
         return listTags;
     }
 
-
     public void updateItemTodo(Long id, Boolean checked, String nameItem){
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -351,11 +350,17 @@ public class DbHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void updateTag(String name){
+    public void updateTag(String oldName, String newName){
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(Const.TagsEntry.COL_LIBELLE, name);
+        values.put(Const.TagsEntry.COL_LIBELLE, newName);
+
+        db.update(Const.TagsEntry.TABLE_NAME, values,
+                Const.TagsEntry.COL_LIBELLE + " = ?",
+                new String[] {oldName});
+
+        db.close();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
