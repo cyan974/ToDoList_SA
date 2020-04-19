@@ -1,16 +1,25 @@
 package com.example.todolist_sa.DTO;
 
-public class ToDoItem {
+import java.io.Serializable;
+
+public class ToDoItem implements Serializable {
     private Long numID;
     private Long idToDo;
     private String name;
     private Boolean isCompleted;
 
-    public ToDoItem(Long numID, Long idToDo, String name){
+    public ToDoItem(Long numID, Long idToDo, String name, Boolean isCompleted){
         this.numID = numID;
         this.idToDo = idToDo;
         this.name = name;
-        this.isCompleted = false;
+        this.isCompleted = isCompleted;
+    }
+
+    public ToDoItem(String name){
+        this.numID = null;
+        this.idToDo = null;
+        this.name = name;
+        this.isCompleted = null;
     }
 
     public Long getNumID() {

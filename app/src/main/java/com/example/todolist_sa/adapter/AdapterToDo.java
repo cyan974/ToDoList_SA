@@ -1,4 +1,4 @@
-package com.example.todolist_sa;
+package com.example.todolist_sa.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,13 +12,14 @@ import androidx.annotation.Nullable;
 
 import com.example.todolist_sa.DTO.ToDo;
 import com.example.todolist_sa.DTO.ToDoItem;
+import com.example.todolist_sa.R;
 
 import java.util.ArrayList;
 
 public class AdapterToDo extends ArrayAdapter<ToDo> {
     Context context;
 
-    AdapterToDo(Context c, ArrayList<ToDo> todoList){
+    public AdapterToDo(Context c, ArrayList<ToDo> todoList){
         super(c, 0, todoList);
         this.context = c;
     }
@@ -33,18 +34,19 @@ public class AdapterToDo extends ArrayAdapter<ToDo> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_todo, parent, false);
         }
 
-        //LayoutInflater layoutInflater = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        //View toDoView = layoutInflater.inflate(R.layout.list_todo, parent, false);
-
         TextView title = convertView.findViewById(R.id.txtTitle);
         TextView description = convertView.findViewById(R.id.txtDescription);
         TextView date = convertView.findViewById(R.id.txtDate);
 
         title.setText(toDo.getTitle());
 
+        Integer cpt = 0;
         String str = "";
         for(ToDoItem item:toDo.getListItems()){
-            str += "- " + item.getName() +"\n";
+            if(cpt < 5 && !item.getCompleted()) {
+                str += "- " + item.getName() +"\n";
+                cpt++;
+            }
         }
         description.setText(str);
 
