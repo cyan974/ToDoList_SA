@@ -453,10 +453,22 @@ public class DbHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(Const.TodoItemEntry.COL_NAME, newName);
 
-        // Suppression des éléments liés à la tâche
         db.update(Const.TodoItemEntry.TABLE_NAME, values,
                 Const.TodoItemEntry.COL_FK_TODO + " = ? AND " + Const.TodoItemEntry.COL_NAME + " = ?",
                 new String[]{idTodo.toString(), oldName});
+
+        db.close();
+    }
+
+    public void updateColorTodo(Long idTodo, Integer color){
+        db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(Const.TodoEntry.COL_BGCOLOR, color);
+
+        db.update(Const.TodoEntry.TABLE_NAME, values,
+                Const.TodoEntry._ID + " = ?",
+                new String[]{idTodo.toString()});
 
         db.close();
     }

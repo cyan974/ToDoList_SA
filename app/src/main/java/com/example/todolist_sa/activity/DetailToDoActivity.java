@@ -51,9 +51,11 @@ public class DetailToDoActivity extends AppCompatActivity {
 
     private ImageView editTitle;
     private ImageView editDate;
-    private ImageView editTags;
 
+    // Variables pour les couleurs
     private Button btnBgColor;
+    private Integer iBgColor;
+
     private EditText edtElement;
 
     private Boolean modeEdit;
@@ -79,7 +81,6 @@ public class DetailToDoActivity extends AppCompatActivity {
         lvItem = findViewById(R.id.listTodo);
         editTitle = findViewById(R.id.editTitle);
         editDate = findViewById(R.id.editDate);
-        editTags = findViewById(R.id.editTags);
         txtTags = findViewById(R.id.txtTags);
         lblTag = findViewById(R.id.lblTags);
         btnBgColor = findViewById(R.id.btnColor);
@@ -118,6 +119,7 @@ public class DetailToDoActivity extends AppCompatActivity {
                 }
                 return true;
 
+                // Action pour ajouter ou supprimer des tags dans la tâche
             case R.id.action_libelle:
                 Intent itnLibelle = new Intent(DetailToDoActivity.this, SelectTagsActivity.class);
                 itnLibelle.putExtra("TODO", todo);
@@ -158,6 +160,7 @@ public class DetailToDoActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
+    // Méthode qui met a jour si la tâche dans la liste a été effectué ou non et met à jour l'affichage des CheckBox (checked or not)
     public void onClickCheckBox(View v){
         View parent = (View) v.getParent();
         CheckBox cbx = parent.findViewById(R.id.cbxChecked);
@@ -263,9 +266,61 @@ public class DetailToDoActivity extends AppCompatActivity {
 
     }
 
-    // Méthode pour modifier les tags de la liste de tâche
-    public void onClickEditTags(View v){
+    // Méthode qui ouvre un AlertDialog pour choisir la couleur
+    public void onClickEditColor(View v){
+        final View colorLayout = getLayoutInflater().inflate(R.layout.list_color_detail, null);
+        AlertDialog alert = new AlertDialog.Builder(DetailToDoActivity.this).create();
+        alert.setTitle("Modifer la couleur de fond");
+        alert.setIcon(R.drawable.logo);
+        alert.setView(colorLayout);
+        alert.setButton(Dialog.BUTTON_POSITIVE,"OK",new DialogInterface.OnClickListener(){
 
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        alert.setButton(Dialog.BUTTON_NEGATIVE,"Réinitialiser",new DialogInterface.OnClickListener(){
+
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //btnBgColor.setBackground(getResources().getDrawable(R.drawable.circle_white));
+                //todo.setBgColor(R.color.colorWhite);
+                iBgColor = R.color.colorWhite;
+                dbHelper.updateColorTodo(todo.getNumID(), iBgColor);
+                getWindow().getDecorView().setBackgroundColor(getResources().getColor(iBgColor));
+            }
+        });
+        alert.show();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    public void onClickBtnColor(View v){
+        switch (v.getId()) {
+            case R.id.btnBlue:
+                //btnBgColor.setBackground(getResources().getDrawable(R.drawable.circle_blue));
+                iBgColor = R.color.blue;
+                break;
+
+            case R.id.btnGrey:
+                //btnBgColor.setBackground(getResources().getDrawable(R.drawable.circle_grey));
+                iBgColor = R.color.grey;
+                break;
+
+            case R.id.btnRed:
+                //btnBgColor.setBackground(getResources().getDrawable(R.drawable.circle_red));
+                iBgColor = R.color.red;
+                break;
+
+            case R.id.btnPurple:
+                //btnBgColor.setBackground(getResources().getDrawable(R.drawable.circle_purple));
+                iBgColor = R.color.purple;
+                break;
+        }
+        dbHelper.updateColorTodo(todo.getNumID(), iBgColor);
+        getWindow().getDecorView().setBackgroundColor(getResources().getColor(iBgColor));
     }
 
     // Méthode pour supprimer un élément dans la liste des tâches (en mode édition)
@@ -353,7 +408,6 @@ public class DetailToDoActivity extends AppCompatActivity {
         // Cache les éléments pour modifier la tâche
         editTitle.setVisibility(View.INVISIBLE);
         editDate.setVisibility(View.INVISIBLE);
-        editTags.setVisibility(View.INVISIBLE);
         updateList();
     }
 
@@ -361,7 +415,6 @@ public class DetailToDoActivity extends AppCompatActivity {
     private void showEdit(){
         editTitle.setVisibility(View.VISIBLE);
         editDate.setVisibility(View.VISIBLE);
-        editTags.setVisibility(View.VISIBLE);
         updateListEdit();
     }
 }

@@ -78,7 +78,7 @@ public class AddToDoActivity extends AppCompatActivity {
         // Gestion de l'affichage pour la ListView
         lvItem = findViewById(R.id.listItem);
         listItems = new ArrayList<>();
-        mAdapter = new ArrayAdapter(this, R.layout.list_item_todo, R.id.txtElement, listItems);
+        mAdapter = new ArrayAdapter(this, R.layout.list_item_add_todo, R.id.txtElement, listItems);
         lvItem.setAdapter(mAdapter);
     }
 
@@ -226,10 +226,10 @@ public class AddToDoActivity extends AppCompatActivity {
 
     // Méthode qui ouvre un AlertDialog pour afficher une vue qui contient un choix de couleur pour le background
     public void onClickChooseColor(View v){
-        final View customLayout = getLayoutInflater().inflate(R.layout.list_color, null);
+        final View customLayout = getLayoutInflater().inflate(R.layout.list_color_add, null);
 
         AlertDialog alert = new AlertDialog.Builder(AddToDoActivity.this).create();
-        alert.setTitle("Choisir une couleur");
+        alert.setTitle("Choisir une couleur de fond");
         alert.setIcon(R.drawable.logo);
         alert.setView(customLayout);
         alert.setButton(Dialog.BUTTON_POSITIVE,"OK",new DialogInterface.OnClickListener(){
@@ -276,7 +276,6 @@ public class AddToDoActivity extends AppCompatActivity {
                 todo.setBgColor(R.color.purple);
                 break;
         }
-
     }
 
     // Action du bouton flottant qui ajoute la liste de tâche avec ses différents éléments (qui crée l'objet ToDo dans la BDD)

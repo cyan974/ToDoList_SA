@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(itnViewTask);
     }
 
+    // Méthode qui met à jour la vue de la liste afin d'avoir la liste complète des tâches toujours à jour
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void updateList() {
         if (adapter != null) {

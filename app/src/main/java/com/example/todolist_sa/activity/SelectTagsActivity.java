@@ -107,7 +107,6 @@ public class SelectTagsActivity extends AppCompatActivity {
                     if(iActivity == 1){
                         dbHelper.deleteTag_Todo(tag.getNumID(), todo.getNumID());
                     }
-
                     break;
                 }
             }
