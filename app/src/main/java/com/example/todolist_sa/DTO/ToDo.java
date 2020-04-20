@@ -1,14 +1,10 @@
 package com.example.todolist_sa.DTO;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.example.todolist_sa.R;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class ToDo implements Serializable {

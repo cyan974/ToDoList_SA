@@ -1,20 +1,17 @@
 package com.example.todolist_sa.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.todolist_sa.DTO.Tag;
 import com.example.todolist_sa.DTO.ToDo;
@@ -54,7 +51,7 @@ public class AdapterToDo extends ArrayAdapter<ToDo> {
         // Met en place le titre
         title.setText(toDo.getTitle());
 
-        // Formatage pour la description
+        // Formatage pour la description (afficher tous les items (liste des tâches) ensemble dans un seul textview)
         Integer cpt = 0;
         String str = "";
         for(ToDoItem item:toDo.getListItems()){
@@ -65,7 +62,7 @@ public class AdapterToDo extends ArrayAdapter<ToDo> {
         }
         description.setText(str);
 
-        // Formatage pour les tags
+        // Formatage pour les tags (afficher tous les tags ensemble dans un seul textview)
         str = "";
         for(Tag tag:toDo.getListTags()){
             str += "(" + tag.getLibelle() + ") ";

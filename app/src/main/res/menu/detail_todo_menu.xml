@@ -5,6 +5,9 @@
         android:id="@+id/action_edit"
         android:title="Modifier" />
     <item
+        android:id="@+id/action_libelle"
+        android:title="Libellés" />
+    <item
         android:id="@+id/action_delete"
         android:title="Supprimer" />
 </menu>

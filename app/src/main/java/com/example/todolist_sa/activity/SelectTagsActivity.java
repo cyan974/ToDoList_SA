@@ -9,7 +9,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.todolist_sa.DTO.Tag;
@@ -29,6 +28,7 @@ public class SelectTagsActivity extends AppCompatActivity {
 
     private ArrayList<Tag> listTagsAdd;
     private ToDo todo;
+    private Integer iActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +43,7 @@ public class SelectTagsActivity extends AppCompatActivity {
         Intent itn = getIntent();
         listTagsAdd = (ArrayList<Tag>) itn.getSerializableExtra("LIST_TAGS");
         todo = (ToDo) itn.getSerializableExtra("TODO");
+        iActivity = itn.getIntExtra("Activity", 0);
 
         listTags = new ArrayList<>();
 
@@ -62,14 +63,26 @@ public class SelectTagsActivity extends AppCompatActivity {
         }
     }
 
+    // Méhtode qui permet d'initialiser la liste au départ avec les tags qui sont deja présent dans la liste ou non
     private void initializeList(){
-        listTags = dbHelper.getListTag();
+        for(Tag tagList:dbHelper.getListTag()){
+            for(Tag tagTodo:todo.getListTags()){
+                if(tagList.getNumID().equals(tagTodo.getNumID())){
+                    tagList.setSelected(true);
+                    listTags.add(tagList);
+                    break;
+                }
+            }
+            if(!tagList.getSelected()){
+                listTags.add(tagList);
+            }
+        }
 
         adapter = new AdapterTags(this, listTags);
         lvTags.setAdapter(adapter);
     }
 
-
+    // Méthode qui se déclenche lors d'un clique sur un checkbox, permet d'ajouter ou retirer un tag de la liste
     public void onClickSelect(View v){
         View parent = (View) v.getParent();
         CheckBox cbxSelect = parent.findViewById(R.id.cbxSelected);
@@ -78,11 +91,26 @@ public class SelectTagsActivity extends AppCompatActivity {
         Tag tag = dbHelper.searchTagByName(txtTag.getText().toString());
 
         if(cbxSelect.isChecked()){
-            //listTagsAdd.add(tag);
+            // Ajoute le tag dans la liste
             todo.addTag(tag);
+
+            // Ajoute à la BDD lorsque c'est l'activité qui affiche le détail
+            if(iActivity == 1){
+                dbHelper.addTag_Todo(tag.getNumID(), todo.getNumID());
+            }
         } else {
-            //listTagsAdd.remove(tag);
-            todo.removeTag(tag);
+            // Retire le tag qui est présent dans la liste
+            for(Tag tagTodo:todo.getListTags()){
+                if(tag.getNumID().equals(tagTodo.getNumID())){
+                    todo.removeTag(tagTodo);
+
+                    if(iActivity == 1){
+                        dbHelper.deleteTag_Todo(tag.getNumID(), todo.getNumID());
+                    }
+
+                    break;
+                }
+            }
         }
     }
 

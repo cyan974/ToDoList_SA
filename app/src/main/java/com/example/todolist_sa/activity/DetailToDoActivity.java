@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -17,10 +18,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.todolist_sa.DTO.Tag;
 import com.example.todolist_sa.DTO.ToDo;
@@ -51,6 +51,10 @@ public class DetailToDoActivity extends AppCompatActivity {
 
     private ImageView editTitle;
     private ImageView editDate;
+    private ImageView editTags;
+
+    private Button btnBgColor;
+    private EditText edtElement;
 
     private Boolean modeEdit;
 
@@ -60,35 +64,35 @@ public class DetailToDoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_todo);
 
-        modeEdit = false;
+        // Titre de l'activité
+        setTitle("Détails de la tâche");
 
-        // ActionBar - modifier le titre de la vue
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Détails de la tâche");
+        // Mode édition, va permettre d'afficher différents boutons pour modifier la tâche
+        modeEdit = false;
 
         dbHelper = new DbHelper(this);
         listItems = new ArrayList<>();
 
-        // Liens avec les différents TextView et ListView de la vue
+        // Récupération des éléments présents dans l'activité
         txtTitle = findViewById(R.id.txtTitle);
         txtDate = findViewById(R.id.txtDate);
         lvItem = findViewById(R.id.listTodo);
         editTitle = findViewById(R.id.editTitle);
         editDate = findViewById(R.id.editDate);
+        editTags = findViewById(R.id.editTags);
         txtTags = findViewById(R.id.txtTags);
         lblTag = findViewById(R.id.lblTags);
+        btnBgColor = findViewById(R.id.btnColor);
+        edtElement = findViewById(R.id.edtElement);
 
         // Récupération de l'objet pour afficher les détails
         Intent itn = getIntent();
         todo = (ToDo)itn.getSerializableExtra("TODO");
 
-        // Met en place la couleur
-        getWindow().getDecorView().setBackgroundColor(getResources().getColor(todo.getBgColor()));
-
         // Mise en place de l'affichage
         setupInfos();
 
-        // cache le mode édition + met à jour la liste des tâches
+        // cache le mode édition + met à jour les infos
         hideEdit();
     }
 
@@ -101,6 +105,7 @@ public class DetailToDoActivity extends AppCompatActivity {
 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            // Permet d'activer ou désactiver le mode édtion (qui permet la modification des éléments)
             case R.id.action_edit:
                 if(modeEdit){
                     hideEdit();
@@ -113,16 +118,39 @@ public class DetailToDoActivity extends AppCompatActivity {
                 }
                 return true;
 
+            case R.id.action_libelle:
+                Intent itnLibelle = new Intent(DetailToDoActivity.this, SelectTagsActivity.class);
+                itnLibelle.putExtra("TODO", todo);
+                itnLibelle.putExtra("Activity", 1); // Défini un nombre pour différence le comportement dans l'activity des tags
+                startActivityForResult(itnLibelle, 0);
+                return true;
+
+                // Supprime la tâche de la BDD
             case R.id.action_delete:
                 dbHelper.deleteToDoById(todo.getNumID());
                 finish();
                 return true;
 
+                // Action lorsque qu'on appuie sur la touche retour dans la barre
             case R.id.home:
                 onBackPressed();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    // Méthode déclenché lorsque l'activity recoit un résultat
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Récupération des informations de l'activité pour les libellés
+        if(requestCode == 0){
+            if(resultCode == RESULT_OK){
+                todo = (ToDo) data.getSerializableExtra("TODO");
+                setupInfos();
+            }
+        }
     }
 
     @Override
@@ -200,6 +228,7 @@ public class DetailToDoActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
+    // Méthode pour modifier le texte d'un item
     public void onClickEditItem(View v){
         View parent = (View) v.getParent();
         TextView ele = parent.findViewById(R.id.txtItem);
@@ -234,6 +263,11 @@ public class DetailToDoActivity extends AppCompatActivity {
 
     }
 
+    // Méthode pour modifier les tags de la liste de tâche
+    public void onClickEditTags(View v){
+
+    }
+
     // Méthode pour supprimer un élément dans la liste des tâches (en mode édition)
     public void onClickDeleteItem(View v){
         View parent = (View) v.getParent();
@@ -242,6 +276,20 @@ public class DetailToDoActivity extends AppCompatActivity {
         dbHelper.deleteItemTodo(ele.getText().toString(), todo.getNumID());
 
         updateListEdit();
+    }
+
+    // Méthode qui ajoute un élément dans la liste et dans la BDD
+    public void onClickAddItem(View v){
+        if(edtElement.getText().toString().length() > 0){
+            dbHelper.addToDoItem(todo.getNumID(), edtElement.getText().toString());
+            edtElement.getText().clear();
+
+            if(modeEdit){
+                updateListEdit();
+            } else {
+                updateList();
+            }
+        }
     }
 
     // Méthode qui permet la maj de la liste
@@ -274,7 +322,7 @@ public class DetailToDoActivity extends AppCompatActivity {
         txtTitle.setText(todo.getTitle());
         txtDate.setText(todo.getEndDate().toString());
 
-        // Si 0, alors on affiche rien, sinon on affiche
+        // Si 0, alors on affiche rien, sinon on affiche la liste des tags
         if(todo.getListTags().size() > 0) {
             // Afficher au pluriel ou au singulier
             if(todo.getListTags().size() > 1) {
@@ -290,12 +338,14 @@ public class DetailToDoActivity extends AppCompatActivity {
             }
             txtTags.setText(str);
         } else {
-            //lblTag.setText("");
-            //txtTags.setText("");
-
+            // cache les boutons d'édition
             lblTag.setVisibility(View.INVISIBLE);
             txtTags.setVisibility(View.INVISIBLE);
         }
+
+        // Met en place la couleur de fond
+        getWindow().getDecorView().setBackgroundColor(getResources().getColor(todo.getBgColor()));
+        //btnBgColor.setBackground(getWindow().getDecorView().getBackground());
     }
 
     // Méthode qui permet de cacher le mode édition
@@ -303,6 +353,7 @@ public class DetailToDoActivity extends AppCompatActivity {
         // Cache les éléments pour modifier la tâche
         editTitle.setVisibility(View.INVISIBLE);
         editDate.setVisibility(View.INVISIBLE);
+        editTags.setVisibility(View.INVISIBLE);
         updateList();
     }
 
@@ -310,6 +361,7 @@ public class DetailToDoActivity extends AppCompatActivity {
     private void showEdit(){
         editTitle.setVisibility(View.VISIBLE);
         editDate.setVisibility(View.VISIBLE);
+        editTags.setVisibility(View.VISIBLE);
         updateListEdit();
     }
 }

@@ -28,7 +28,7 @@ public class AdapterTags extends ArrayAdapter<Tag> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        // Get the data item for this position
+        // On récupère l'objet tag par rapport à la position (qui commence de 0)
         Tag itemTag = getItem(position);
 
         if(convertView == null){
@@ -38,7 +38,13 @@ public class AdapterTags extends ArrayAdapter<Tag> {
         TextView name = convertView.findViewById(R.id.txtTag);
         CheckBox checkBox = convertView.findViewById(R.id.cbxSelected);
 
+        // Met en place le texte du tags (libellé)
         name.setText(itemTag.getLibelle());
+
+        // Vérifie si le tag est dans l'état sélectionné, pour mettre la checkbox coché ou non
+        if(itemTag.getSelected()){
+            checkBox.setChecked(true);
+        }
 
         return convertView;
     }

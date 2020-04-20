@@ -57,12 +57,15 @@ public class AddToDoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_todo);
 
+        // Titre de l'activité
         setTitle("Ajout d'une tâche");
 
         dbHelper = new DbHelper(this);
 
+        // Objet qui va permettre de garder toutes les informations avant d'etre enregistré dans la BDD
         todo = new ToDo();
 
+        // Récupération des éléments présents dans l'activité
         edtTitre = findViewById(R.id.edtTitre);
         txtDate = findViewById(R.id.txtDate);
         edtElement = findViewById(R.id.edtElement);
@@ -81,11 +84,12 @@ public class AddToDoActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        // Cela ajoute des éléments à la barre d'action si elle est présente.
         getMenuInflater().inflate(R.menu.add_todo_menu, menu);
         return true;
     }
 
+    // Options présent dans l'ActionBar
     @RequiresApi(api = Build.VERSION_CODES.O)
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -100,6 +104,7 @@ public class AddToDoActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    // Méthode déclenché lorsque l'activity recoit un résultat
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -116,25 +121,24 @@ public class AddToDoActivity extends AppCompatActivity {
     // Méthode pour sauvegarder les informations dans un objet
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void saveInfo(){
+        // Sauvegarder le titre dans l'objet ToDo
         if(edtTitre.getText().toString().length() > 0)
             todo.setTitle(edtTitre.getText().toString());
 
+        // Sauvegarde la date dans l'objet ToDo
         if(txtDate.getText().toString().length() > 0)
             todo.setEndDate(endDate);
 
+        // Sauvegarde tous les items (liste des choses à faire) dans la liste de l'objet ToDo
         if(listItems.size() > 0) {
             todo.getListItems().clear();
             for(String item : listItems){
                 todo.addItem(new ToDoItem(item));
             }
         }
-
-        if(txtTags.getText().toString().length() > 0){
-
-        }
     }
 
-    // Méthode pour réafficher les infos dans l'activity
+    // Méthode pour réafficher les infos sauvegardés dans l'activity
     public void restoreInfo(){
         if(todo.getTitle() != null){
             edtTitre.setText(todo.getTitle());
@@ -202,7 +206,7 @@ public class AddToDoActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
-    // Méthode pour ajouter une élément pour la liste des tâches
+    // Méthode pour ajouter un élément dans la liste des tâches
     public void onClickAddElement(View v){
         if(edtElement.getText().toString().length() > 0){
             listItems.add(edtElement.getText().toString());
@@ -220,6 +224,7 @@ public class AddToDoActivity extends AppCompatActivity {
         mAdapter.notifyDataSetChanged();
     }
 
+    // Méthode qui ouvre un AlertDialog pour afficher une vue qui contient un choix de couleur pour le background
     public void onClickChooseColor(View v){
         final View customLayout = getLayoutInflater().inflate(R.layout.list_color, null);
 
@@ -247,6 +252,7 @@ public class AddToDoActivity extends AppCompatActivity {
         alert.show();
     }
 
+    // Méthode qui choisit la couleur du background en fonction du bouton surlequel on a cliqué
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public void onClickColor(View v){
         switch (v.getId()) {
@@ -273,7 +279,7 @@ public class AddToDoActivity extends AppCompatActivity {
 
     }
 
-    // Action du bouton flottant qui ajoute la liste de tâche avec ses différents éléments
+    // Action du bouton flottant qui ajoute la liste de tâche avec ses différents éléments (qui crée l'objet ToDo dans la BDD)
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void onClickAdd(View v){
         saveInfo();

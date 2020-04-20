@@ -277,10 +277,19 @@ public class DbHelper extends SQLiteOpenHelper {
     public void deleteItemTodo(String itemName, Long idTodo){
         db = this.getWritableDatabase();
 
-        // Suppression des éléments liés à la tâche
         db.delete(Const.TodoItemEntry.TABLE_NAME,
                 Const.TodoItemEntry.COL_FK_TODO + " = ? AND " + Const.TodoItemEntry.COL_NAME + " = ?",
                 new String[]{idTodo.toString(), itemName});
+
+        db.close();
+    }
+
+    public void deleteTag_Todo(Long idTag, Long idTodo){
+        db = this.getWritableDatabase();
+
+        db.delete(Const.TagTodoEntry.TABLE_NAME,
+                Const.TagTodoEntry.COL_FK_TODO + " = ? AND " + Const.TagTodoEntry.COL_FK_TAG + " = ?",
+                new String[]{idTodo.toString(), idTag.toString()});
 
         db.close();
     }
