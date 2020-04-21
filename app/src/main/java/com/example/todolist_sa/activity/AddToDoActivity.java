@@ -297,8 +297,8 @@ public class AddToDoActivity extends AppCompatActivity {
     }
 
     public void onClickEditElement(View v){
-        /*View parent = (View) v.getParent();
-        TextView ele = parent.findViewById(R.id.txtItem);
+        View parent = (View) v.getParent();
+        final TextView ele = parent.findViewById(R.id.txtElement);
 
         final String oldName = ele.getText().toString();
         final EditText input = new EditText(AddToDoActivity.this);
@@ -314,8 +314,8 @@ public class AddToDoActivity extends AppCompatActivity {
                 String newName = input.getText().toString();
 
                 if(!oldName.equals(newName)){
-                    dbHelper.updateNameItemTodo(oldName, newName, todo.getNumID());
-                    updateListEdit();
+                    listItems.set(listItems.indexOf(oldName), newName);
+                    mAdapter.notifyDataSetChanged();
                 }
             }
         });
@@ -326,7 +326,7 @@ public class AddToDoActivity extends AppCompatActivity {
 
             }
         });
-        alert.show();*/
+        alert.show();
     }
 
     // Méthode qui ouvre un AlertDialog pour afficher une vue qui contient un choix de couleur pour le background
