@@ -157,14 +157,6 @@ public class DbHelper extends SQLiteOpenHelper {
         return res!=-1L;
     }
 
-    public void deleteTag(String tag){
-        db = this.getWritableDatabase();
-        db.delete(Const.TagsEntry.TABLE_NAME,
-                Const.TagsEntry.COL_LIBELLE + " = ?",
-                new String[]{tag});
-        db.close();
-    }
-
     public Tag searchTagByName(String name){
         db = this.getReadableDatabase();
 
@@ -291,6 +283,21 @@ public class DbHelper extends SQLiteOpenHelper {
                 Const.TagTodoEntry.COL_FK_TODO + " = ? AND " + Const.TagTodoEntry.COL_FK_TAG + " = ?",
                 new String[]{idTodo.toString(), idTag.toString()});
 
+        db.close();
+    }
+
+    public void deleteTag(Tag tag){
+        db = this.getWritableDatabase();
+
+        //Tag tag = searchTagByName(tagName);
+
+        db.delete(Const.TagTodoEntry.TABLE_NAME,
+                Const.TagTodoEntry.COL_FK_TAG + " = ?",
+                new String[]{tag.getNumID().toString()});
+
+        db.delete(Const.TagsEntry.TABLE_NAME,
+                Const.TagsEntry._ID + " = ?",
+                new String[]{tag.getNumID().toString()});
         db.close();
     }
 

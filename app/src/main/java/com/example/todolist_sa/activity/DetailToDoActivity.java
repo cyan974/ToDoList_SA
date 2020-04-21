@@ -263,7 +263,6 @@ public class DetailToDoActivity extends AppCompatActivity {
             }
         });
         alert.show();
-
     }
 
     // Méthode qui ouvre un AlertDialog pour choisir la couleur
@@ -392,8 +391,12 @@ public class DetailToDoActivity extends AppCompatActivity {
                 str += "(" + tag.getLibelle() + ") ";
             }
             txtTags.setText(str);
+
+            // affiche le texte pour les libellés s'il y en a
+            lblTag.setVisibility(View.VISIBLE);
+            txtTags.setVisibility(View.VISIBLE);
         } else {
-            // cache les boutons d'édition
+            // cache le texte pour les libellés s'il n'y en a pas
             lblTag.setVisibility(View.INVISIBLE);
             txtTags.setVisibility(View.INVISIBLE);
         }

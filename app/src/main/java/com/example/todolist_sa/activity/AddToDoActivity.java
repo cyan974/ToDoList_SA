@@ -1,12 +1,19 @@
 package com.example.todolist_sa.activity;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,6 +21,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -21,6 +29,9 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import com.example.todolist_sa.DTO.Tag;
 import com.example.todolist_sa.DTO.ToDo;
@@ -28,11 +39,20 @@ import com.example.todolist_sa.DTO.ToDoItem;
 import com.example.todolist_sa.R;
 import com.example.todolist_sa.sqlite.DbHelper;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 public class AddToDoActivity extends AppCompatActivity {
+    // Constantes
+    private static final Integer RES_CHOOSE_TAG = 1;
+    private static final Integer RES_TAKE_PICTURE = 2;
+
+    // Propriétés
     private DbHelper dbHelper;
     private DatePickerDialog datePickerDialog;
 
@@ -46,10 +66,13 @@ public class AddToDoActivity extends AppCompatActivity {
     private TextView txtTags;
     private TextView lblLibelle;
     private Button btnColor;
+    private ImageView imgTodo;
 
     private LocalDate endDate;
 
     private ToDo todo;
+
+    private String photoPath = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -72,6 +95,7 @@ public class AddToDoActivity extends AppCompatActivity {
         txtTags = findViewById(R.id.txtTags);
         lblLibelle = findViewById(R.id.lblLibelle);
         btnColor = findViewById(R.id.btnColor);
+        imgTodo = findViewById(R.id.imgTodo);
 
         lblLibelle.setVisibility(View.INVISIBLE);
 
@@ -98,7 +122,11 @@ public class AddToDoActivity extends AppCompatActivity {
                 Intent itnLibelle = new Intent(AddToDoActivity.this, SelectTagsActivity.class);
                 itnLibelle.putExtra("TODO", todo);
 
-                startActivityForResult(itnLibelle,1);
+                startActivityForResult(itnLibelle, RES_CHOOSE_TAG);
+                return true;
+
+            case R.id.action_photo:
+                onClickTakePicture();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -109,12 +137,20 @@ public class AddToDoActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // Récupération des informations de l'activité pour les libellés
-        if(requestCode == 1){
-            if(resultCode == RESULT_OK){
-                todo = (ToDo) data.getSerializableExtra("TODO");
-                restoreInfo();
-            }
+        // Retour de l'appel de l'activity pour les libellés
+        if(requestCode == RES_CHOOSE_TAG && resultCode == RESULT_OK){
+            // Récupérer notre objet todo
+            todo = (ToDo) data.getSerializableExtra("TODO");
+            restoreInfo();
+        }
+
+        // Retour de l'appel de l'appareil photo
+        if(requestCode == RES_TAKE_PICTURE && resultCode == RESULT_OK){
+            // Récupérer l'image
+            /*Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            //Bitmap image = BitmapFactory.decodeFile(photoPath);
+            imgTodo.setImageBitmap(imageBitmap);*/
         }
     }
 
@@ -175,6 +211,42 @@ public class AddToDoActivity extends AppCompatActivity {
         }
     }
 
+    // Méthode pour accéder à l'appareil photo et prendre une photo et mémorise dans un fichier temporaire
+    public void onClickTakePicture() {
+        /*Intent itnPicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        // test pour contrôler que l'intent peut être créé
+        if(itnPicture.resolveActivity(getPackageManager()) != null){
+            startActivityForResult(itnPicture, RES_TAKE_PICTURE);
+
+            // Crée un nom de fichier unique
+            String time = new SimpleDateFormat("yyyyMMdd HHmmss").format(new Date());
+            File photoDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+            try {
+                File photoFile = File.createTempFile("photo"+time,".jpg", photoDir);
+
+                // Enregistre le chemin complet
+                photoPath = photoFile.getAbsolutePath();
+
+                // Créer l'URI
+                Uri photoUri = FileProvider.getUriForFile(AddToDoActivity.this,
+                        AddToDoActivity.this.getApplicationContext().getPackageName()+".provider",
+                        photoFile);
+
+                // Transfert URI vers l'intent pour enregistrer la photo dans le fichier temporaire
+                itnPicture.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+
+                // ouvrir l'activity par rapport à l'intent
+                startActivityForResult(itnPicture, RES_TAKE_PICTURE);
+            } catch (IOException e){
+                e.printStackTrace();
+            }
+
+        }*/
+
+    }
+
     // Méthode onClick pour l'ajout d'une date via l'interface d'un calendrier
     public void onClickDate(View v){
         // calender class's instance and get current date , month and year from calender
@@ -222,6 +294,39 @@ public class AddToDoActivity extends AppCompatActivity {
         TextView ele = parent.findViewById(R.id.txtElement);
         listItems.remove(ele.getText().toString());
         mAdapter.notifyDataSetChanged();
+    }
+
+    public void onClickEditElement(View v){
+        /*View parent = (View) v.getParent();
+        TextView ele = parent.findViewById(R.id.txtItem);
+
+        final String oldName = ele.getText().toString();
+        final EditText input = new EditText(AddToDoActivity.this);
+        input.setText(oldName);
+
+        AlertDialog alert = new AlertDialog.Builder(AddToDoActivity.this).create();
+        alert.setTitle("Modification d'un élément");
+        alert.setIcon(R.drawable.logo);
+        alert.setView(input);
+        alert.setButton(Dialog.BUTTON_POSITIVE,"Valider",new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String newName = input.getText().toString();
+
+                if(!oldName.equals(newName)){
+                    dbHelper.updateNameItemTodo(oldName, newName, todo.getNumID());
+                    updateListEdit();
+                }
+            }
+        });
+
+        alert.setButton(Dialog.BUTTON_NEGATIVE,"Annuler",new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        alert.show();*/
     }
 
     // Méthode qui ouvre un AlertDialog pour afficher une vue qui contient un choix de couleur pour le background
