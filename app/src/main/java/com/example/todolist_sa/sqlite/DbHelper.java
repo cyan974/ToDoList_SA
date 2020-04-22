@@ -30,7 +30,9 @@ public class DbHelper extends SQLiteOpenHelper {
                     Const.TodoEntry.COL_TITLE + " TEXT NOT NULL UNIQUE," +
                     Const.TodoEntry.COL_FK_TAG + " INTEGER," +
                     Const.TodoEntry.COL_ENDDATE + " DATE," +
-                    Const.TodoEntry.COL_IMG + " TEXT " + ")";
+                    Const.TodoEntry.COL_IMG + " TEXT," +
+                    Const.TodoEntry.COL_BGCOLOR + " INTEGER " +
+                    ")";
 
     // Création de la requête SQL pour créer la table ToDoItem
     private static final String CREATE_TODO_ITEM =
@@ -100,13 +102,14 @@ public class DbHelper extends SQLiteOpenHelper {
 
     // Méthode pour ajouter des tâches dans la table ToDo
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public Boolean addToDo(String title, LocalDate endDate){
+    public Boolean addToDo(String title, LocalDate endDate, Integer bgColor){
         db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(Const.TodoEntry.COL_TITLE, title);
         values.put(Const.TodoEntry.COL_FK_TAG, 0);
         values.put(Const.TodoEntry.COL_ENDDATE, endDate.toString());
+        values.put(Const.TodoEntry.COL_BGCOLOR, bgColor);
 
         Long res = db.insert(Const.TodoEntry.TABLE_NAME, null, values);
 
@@ -154,18 +157,28 @@ public class DbHelper extends SQLiteOpenHelper {
         return res!=-1L;
     }
 
-    public void deleteTag(String tag){
-        db = this.getWritableDatabase();
-        db.delete(Const.TagsEntry.TABLE_NAME,
-                Const.TagsEntry.COL_LIBELLE + " = ?",
-                new String[]{tag});
-        db.close();
-    }
-
     public Tag searchTagByName(String name){
         db = this.getReadableDatabase();
 
         Cursor queryRes = db.rawQuery("SELECT * FROM " + Const.TagsEntry.TABLE_NAME + " WHERE " + Const.TagsEntry.COL_LIBELLE + " =?", new String[] { name });
+
+        if(queryRes.moveToFirst()){
+            db.close();
+            return new Tag(
+                    queryRes.getLong(queryRes.getColumnIndex(Const.TagsEntry._ID)),
+                    queryRes.getString(queryRes.getColumnIndex(Const.TagsEntry.COL_LIBELLE))
+            );
+        } else {
+            db.close();
+            queryRes.close();
+            return null;
+        }
+    }
+
+    public Tag searchTagById(Long idTag){
+        db = this.getReadableDatabase();
+
+        Cursor queryRes = db.rawQuery("SELECT * FROM " + Const.TagsEntry.TABLE_NAME + " WHERE " + Const.TagsEntry._ID + " =?", new String[] { idTag.toString() });
 
         if(queryRes.moveToFirst()){
             db.close();
@@ -188,11 +201,18 @@ public class DbHelper extends SQLiteOpenHelper {
 
         if(queryRes.moveToFirst()){
             db.close();
-            return new ToDo(
+            ToDo toDo = new ToDo(
                     queryRes.getLong(queryRes.getColumnIndex(Const.TodoEntry._ID)),
                     queryRes.getLong(queryRes.getColumnIndex(Const.TodoEntry.COL_FK_TAG)),
                     queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_TITLE)),
-                    LocalDate.parse(queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_ENDDATE))));
+                    LocalDate.parse(queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_ENDDATE))),
+                    queryRes.getInt(queryRes.getColumnIndex(Const.TodoEntry.COL_BGCOLOR))
+                    );
+
+            toDo.setListItems(getListItemByTodo(toDo.getNumID()));
+            toDo.setListTags(getListTagByTodo(toDo.getNumID()));
+
+            return toDo;
 
         } else {
             db.close();
@@ -213,7 +233,9 @@ public class DbHelper extends SQLiteOpenHelper {
                     queryRes.getLong(queryRes.getColumnIndex(Const.TodoEntry._ID)),
                     queryRes.getLong(queryRes.getColumnIndex(Const.TodoEntry.COL_FK_TAG)),
                     queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_TITLE)),
-                    LocalDate.parse(queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_ENDDATE))));
+                    LocalDate.parse(queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_ENDDATE))),
+                    queryRes.getInt(queryRes.getColumnIndex(Const.TodoEntry.COL_BGCOLOR))
+            );
         } else {
             queryRes.close();
             db.close();
@@ -244,6 +266,40 @@ public class DbHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void deleteItemTodo(String itemName, Long idTodo){
+        db = this.getWritableDatabase();
+
+        db.delete(Const.TodoItemEntry.TABLE_NAME,
+                Const.TodoItemEntry.COL_FK_TODO + " = ? AND " + Const.TodoItemEntry.COL_NAME + " = ?",
+                new String[]{idTodo.toString(), itemName});
+
+        db.close();
+    }
+
+    public void deleteTag_Todo(Long idTag, Long idTodo){
+        db = this.getWritableDatabase();
+
+        db.delete(Const.TagTodoEntry.TABLE_NAME,
+                Const.TagTodoEntry.COL_FK_TODO + " = ? AND " + Const.TagTodoEntry.COL_FK_TAG + " = ?",
+                new String[]{idTodo.toString(), idTag.toString()});
+
+        db.close();
+    }
+
+    public void deleteTag(Tag tag){
+        db = this.getWritableDatabase();
+
+        //Tag tag = searchTagByName(tagName);
+
+        db.delete(Const.TagTodoEntry.TABLE_NAME,
+                Const.TagTodoEntry.COL_FK_TAG + " = ?",
+                new String[]{tag.getNumID().toString()});
+
+        db.delete(Const.TagsEntry.TABLE_NAME,
+                Const.TagsEntry._ID + " = ?",
+                new String[]{tag.getNumID().toString()});
+        db.close();
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public ArrayList<ToDo> getListToDo(){
@@ -258,23 +314,13 @@ public class DbHelper extends SQLiteOpenHelper {
                         queryRes.getLong(queryRes.getColumnIndex(Const.TodoEntry._ID)),
                         queryRes.getLong(queryRes.getColumnIndex(Const.TodoEntry.COL_FK_TAG)),
                         queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_TITLE)),
-                        LocalDate.parse(queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_ENDDATE))));
+                        LocalDate.parse(queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_ENDDATE))),
+                        queryRes.getInt(queryRes.getColumnIndex(Const.TodoEntry.COL_BGCOLOR))
+                );
 
-                //Requête pour remplir la liste des tâches à faire dans la tâche principale
-                Cursor queryResItem = db.rawQuery("SELECT * FROM " + Const.TodoItemEntry.TABLE_NAME + " WHERE " + Const.TodoItemEntry.COL_FK_TODO + " = ?", new String[]{toDo.getNumID().toString()});
+                toDo.setListItems(getListItemByTodo(toDo.getNumID()));
 
-                if(queryResItem.moveToFirst()){
-                    do{
-                        ToDoItem toDoItem = new ToDoItem(
-                                queryResItem.getLong(queryResItem.getColumnIndex(Const.TodoItemEntry._ID)),
-                                queryResItem.getLong(queryResItem.getColumnIndex(Const.TodoItemEntry.COL_FK_TODO)),
-                                queryResItem.getString(queryResItem.getColumnIndex(Const.TodoItemEntry.COL_NAME)),
-                                queryResItem.getInt(queryResItem.getColumnIndex(Const.TodoItemEntry.COL_ISCOMPLETED)) > 0
-                        );
-
-                        toDo.addItem(toDoItem);
-                    } while(queryResItem.moveToNext());
-                }
+                toDo.setListTags(getListTagByTodo(toDo.getNumID()));
 
                 listRes.add(toDo);
             } while(queryRes.moveToNext());
@@ -286,11 +332,11 @@ public class DbHelper extends SQLiteOpenHelper {
         return listRes;
     }
 
-    public ArrayList<ToDoItem> getListItem(Long id){
+    public ArrayList<ToDoItem> getListItemByTodo(Long idTodo){
         ArrayList<ToDoItem> listItems = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor queryResItem = db.rawQuery("SELECT * FROM " + Const.TodoItemEntry.TABLE_NAME + " WHERE " + Const.TodoItemEntry.COL_FK_TODO + " = ?", new String[]{id.toString()});
+        Cursor queryResItem = db.rawQuery("SELECT * FROM " + Const.TodoItemEntry.TABLE_NAME + " WHERE " + Const.TodoItemEntry.COL_FK_TODO + " = ?", new String[]{ idTodo.toString() });
 
         if(queryResItem.moveToFirst()){
             do{
@@ -298,7 +344,7 @@ public class DbHelper extends SQLiteOpenHelper {
                         queryResItem.getLong(queryResItem.getColumnIndex(Const.TodoItemEntry._ID)),
                         queryResItem.getLong(queryResItem.getColumnIndex(Const.TodoItemEntry.COL_FK_TODO)),
                         queryResItem.getString(queryResItem.getColumnIndex(Const.TodoItemEntry.COL_NAME)),
-                        queryResItem.getInt(queryResItem.getColumnIndex(Const.TodoItemEntry.COL_ISCOMPLETED)) >0
+                        queryResItem.getInt(queryResItem.getColumnIndex(Const.TodoItemEntry.COL_ISCOMPLETED)) > 0
                 );
 
                 listItems.add(toDoItem);
@@ -319,7 +365,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
         if(queryRes.moveToFirst()){
             do{
-                Tag tag = new Tag(queryRes.getLong(queryRes.getColumnIndex(Const.TagTodoEntry._ID)),
+                Tag tag = new Tag(queryRes.getLong(queryRes.getColumnIndex(Const.TagsEntry._ID)),
                         queryRes.getString(queryRes.getColumnIndex(Const.TagsEntry.COL_LIBELLE)));
                 listTags.add(tag);
             } while(queryRes.moveToNext());
@@ -331,7 +377,26 @@ public class DbHelper extends SQLiteOpenHelper {
         return listTags;
     }
 
-    public void updateItemTodo(Long id, Boolean checked, String nameItem){
+    public ArrayList<Tag> getListTagByTodo(Long idTodo){
+        ArrayList<Tag> listTags = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor queryRes = db.rawQuery("SELECT * FROM " + Const.TagTodoEntry.TABLE_NAME + " WHERE " + Const.TagTodoEntry.COL_FK_TODO + " = ?", new String[]{ idTodo.toString() });
+
+        if(queryRes.moveToFirst()){
+            do{
+                Tag tag = searchTagById(queryRes.getLong(queryRes.getColumnIndex(Const.TagTodoEntry.COL_FK_TAG)));
+                listTags.add(tag);
+            } while(queryRes.moveToNext());
+        }
+
+        queryRes.close();
+        db.close();
+
+        return listTags;
+    }
+
+    public void updateCheckedItemTodo(Long id, Boolean checked, String nameItem){
         SQLiteDatabase db = this.getWritableDatabase();
 
         Integer isChecked;
@@ -363,7 +428,59 @@ public class DbHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void updateTitleTodo(String oldTitle, String newTitle){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(Const.TodoEntry.COL_TITLE, newTitle);
+
+        db.update(Const.TodoEntry.TABLE_NAME, values,
+                Const.TodoEntry.COL_TITLE + " = ?",
+                new String[] {oldTitle});
+
+        db.close();
+    }
+
+    public void updateEndDateTodo(LocalDate endDate, Long idTodo) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(Const.TodoEntry.COL_ENDDATE, endDate.toString());
+
+        db.update(Const.TodoEntry.TABLE_NAME, values,
+                Const.TodoEntry._ID + " = ?",
+                new String[] {idTodo.toString()});
+
+        db.close();
+    }
+
+    public void updateNameItemTodo(String oldName, String newName, Long idTodo){
+        db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(Const.TodoItemEntry.COL_NAME, newName);
+
+        db.update(Const.TodoItemEntry.TABLE_NAME, values,
+                Const.TodoItemEntry.COL_FK_TODO + " = ? AND " + Const.TodoItemEntry.COL_NAME + " = ?",
+                new String[]{idTodo.toString(), oldName});
+
+        db.close();
+    }
+
+    public void updateColorTodo(Long idTodo, Integer color){
+        db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(Const.TodoEntry.COL_BGCOLOR, color);
+
+        db.update(Const.TodoEntry.TABLE_NAME, values,
+                Const.TodoEntry._ID + " = ?",
+                new String[]{idTodo.toString()});
+
+        db.close();
+    }
+
+    /*@RequiresApi(api = Build.VERSION_CODES.O)
     public void insertFakeData(){
 
         // Tâches
@@ -386,5 +503,5 @@ public class DbHelper extends SQLiteOpenHelper {
         addTag("Maison");
         addTag("Enfant");
 
-    }
+    }*/
 }

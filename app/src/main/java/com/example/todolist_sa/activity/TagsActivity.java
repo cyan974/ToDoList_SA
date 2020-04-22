@@ -63,7 +63,7 @@ public class TagsActivity extends AppCompatActivity {
         View parent = (View) v.getParent();
         TextView ele = parent.findViewById(R.id.txtTag);
 
-        dbHelper.deleteTag(ele.getText().toString());
+        dbHelper.deleteTag(dbHelper.searchTagByName(ele.getText().toString()));
         updateList();
     }
 

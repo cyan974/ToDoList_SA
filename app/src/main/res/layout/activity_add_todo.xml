@@ -7,13 +7,21 @@
     tools:context=".activity.AddToDoActivity"
     tools:ignore="MissingDefaultResource">
 
+    <ImageView
+        android:id="@+id/imgTodo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@+id/edtTitre"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <EditText
         android:id="@+id/edtTitre"
         android:layout_width="0dp"
         android:layout_height="55dp"
         android:layout_marginStart="15dp"
         android:layout_marginLeft="15dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="15dp"
         android:layout_marginRight="15dp"
         android:autofillHints=""
@@ -23,7 +31,7 @@
         android:maxLength="30"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/imgTodo" />
 
     <ImageView
         android:id="@+id/btnDate"
@@ -57,16 +65,34 @@
         android:layout_marginTop="25dp"
         android:text="Date de fin :"
         android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edtTitre" />
 
+
+    <TextView
+        android:id="@+id/txtTags"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginRight="15dp"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/lblLibelle"
+        app:layout_constraintTop_toBottomOf="@+id/lblDate" />
 
     <ListView
         android:id="@+id/listItem"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="5dp"
         app:layout_constraintBottom_toTopOf="@+id/coordinatorLayout"
-        app:layout_constraintTop_toBottomOf="@+id/edtElement" >
+        app:layout_constraintTop_toBottomOf="@+id/edtElement"
+        app:layout_constraintVertical_bias="0.0"
+        tools:layout_editor_absoluteX="38dp">
 
     </ListView>
 
@@ -76,12 +102,6 @@
         android:layout_height="95dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent">
-
-        <TextView
-            android:id="@+id/txtTags"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="italic" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/floating_action_button"
@@ -94,6 +114,14 @@
             android:onClick="onClickAdd"
             app:backgroundTint="@color/colorPrimary"
             app:srcCompat="@drawable/ic_add_task" />
+
+        <Button
+            android:id="@+id/btnColor"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="16dp"
+            android:background="@drawable/circle_white"
+            android:onClick="onClickChooseColor" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <EditText
@@ -102,7 +130,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
         android:layout_marginLeft="15dp"
-        android:layout_marginTop="45dp"
+        android:layout_marginTop="15dp"
         android:layout_marginEnd="10dp"
         android:layout_marginRight="10dp"
         android:ems="10"
@@ -113,18 +141,31 @@
         android:textColorLink="@color/colorPrimary"
         app:layout_constraintEnd_toStartOf="@+id/btnAddElement"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnDate" />
+        app:layout_constraintTop_toBottomOf="@+id/txtTags" />
 
     <ImageView
         android:id="@+id/btnAddElement"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="15dp"
         android:layout_marginRight="15dp"
         android:onClick="onClickAddElement"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnDate"
+        app:layout_constraintTop_toBottomOf="@+id/txtTags"
         app:srcCompat="@android:drawable/ic_input_add" />
+
+    <TextView
+        android:id="@+id/lblLibelle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="20dp"
+        android:text="Libelle :"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lblDate" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

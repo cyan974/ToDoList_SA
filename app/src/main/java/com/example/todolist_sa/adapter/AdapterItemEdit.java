@@ -1,7 +1,6 @@
 package com.example.todolist_sa.adapter;
 
 import android.content.Context;
-import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,16 +12,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.todolist_sa.DTO.ToDo;
 import com.example.todolist_sa.DTO.ToDoItem;
 import com.example.todolist_sa.R;
 
 import java.util.ArrayList;
 
-public class AdapterItem extends ArrayAdapter<ToDoItem> {
+public class AdapterItemEdit extends ArrayAdapter<ToDoItem> {
     Context context;
 
-    public AdapterItem(Context c, ArrayList<ToDoItem> itemList){
+    public AdapterItemEdit(Context c, ArrayList<ToDoItem> itemList){
         super(c, 0, itemList);
         this.context = c;
     }
@@ -34,17 +32,17 @@ public class AdapterItem extends ArrayAdapter<ToDoItem> {
         ToDoItem itemTodo = getItem(position);
 
         if(convertView == null){
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_detail, parent, false);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_detail_edit, parent, false);
         }
 
         TextView name = convertView.findViewById(R.id.txtItem);
         CheckBox checkBox = convertView.findViewById(R.id.cbxChecked);
+        ImageView editItem = convertView.findViewById(R.id.editItem);
 
         name.setText(itemTodo.getName());
 
         if(itemTodo.getCompleted()){
             checkBox.setChecked(true);
-            //name.setPaintFlags(name.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         } else {
             checkBox.setChecked(false);
         }
