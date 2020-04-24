@@ -1,11 +1,14 @@
-package com.example.todolist_sa.adapter;
+package com.example.todolist_sa.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -44,9 +47,14 @@ public class AdapterToDo extends ArrayAdapter<ToDo> {
         TextView date = convertView.findViewById(R.id.txtDate);
         TextView tags = convertView.findViewById(R.id.txtTags);
         CardView cardView = convertView.findViewById(R.id.cvTodo);
+        ImageView img = convertView.findViewById(R.id.imgTodo);
 
         // Met en place la couleur de fond
         cardView.setCardBackgroundColor(context.getResources().getColor(toDo.getBgColor()));
+
+        // Met en place l'image de la tâche s'il y en a une
+        Bitmap image = BitmapFactory.decodeFile(toDo.getImgPath());
+        img.setImageBitmap(image);
 
         // Met en place le titre
         title.setText(toDo.getTitle());

@@ -1,4 +1,4 @@
-package com.example.todolist_sa.adapter;
+package com.example.todolist_sa.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.todolist_sa.DTO.Tag;
-import com.example.todolist_sa.DTO.ToDoItem;
 import com.example.todolist_sa.R;
 
 import java.util.ArrayList;

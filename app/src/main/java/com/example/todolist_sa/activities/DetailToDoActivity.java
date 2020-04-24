@@ -1,12 +1,17 @@
-package com.example.todolist_sa.activity;
+package com.example.todolist_sa.activities;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,8 +31,8 @@ import com.example.todolist_sa.DTO.Tag;
 import com.example.todolist_sa.DTO.ToDo;
 import com.example.todolist_sa.DTO.ToDoItem;
 import com.example.todolist_sa.R;
-import com.example.todolist_sa.adapter.AdapterItem;
-import com.example.todolist_sa.adapter.AdapterItemEdit;
+import com.example.todolist_sa.adapters.AdapterItem;
+import com.example.todolist_sa.adapters.AdapterItemEdit;
 import com.example.todolist_sa.sqlite.DbHelper;
 
 import java.time.LocalDate;
@@ -35,6 +40,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 public class DetailToDoActivity extends AppCompatActivity {
+    // Constantes
+    private static final Integer RES_GALLERY = 1;
+
     private DbHelper dbHelper;
     private DatePickerDialog datePickerDialog;
     private ToDo todo;
@@ -51,6 +59,8 @@ public class DetailToDoActivity extends AppCompatActivity {
 
     private ImageView editTitle;
     private ImageView editDate;
+    private ImageView editImg;
+    private ImageView imgDetail;
 
     // Variables pour les couleurs
     private Button btnBgColor;
@@ -85,6 +95,8 @@ public class DetailToDoActivity extends AppCompatActivity {
         lblTag = findViewById(R.id.lblTags);
         btnBgColor = findViewById(R.id.btnColor);
         edtElement = findViewById(R.id.edtElement);
+        imgDetail = findViewById(R.id.imgDetail);
+        editImg = findViewById(R.id.editImg);
 
         // Récupération de l'objet pour afficher les détails
         Intent itn = getIntent();
@@ -147,10 +159,31 @@ public class DetailToDoActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         // Récupération des informations de l'activité pour les libellés
-        if(requestCode == 0){
-            if(resultCode == RESULT_OK){
+        if (requestCode == 0) {
+            if (resultCode == RESULT_OK) {
                 todo = (ToDo) data.getSerializableExtra("TODO");
                 setupInfos();
+            }
+        }
+
+        if (requestCode == RES_GALLERY && resultCode == RESULT_OK) {
+            // Accès à l'image à partir de data
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
+            // Curseur d'accès au chemin de l'image
+            Cursor cursor = this.getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+
+            // Position sur la première ligne (normalement une seule)
+            if (cursor.moveToFirst()) {
+                // Récupération du chemin précis de l'image
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                String pathImg = cursor.getString(columnIndex);
+                dbHelper.updateImageTodo(todo.getNumID(), pathImg);
+                cursor.close();
+
+                // Récupération image + affichage
+                Bitmap image = BitmapFactory.decodeFile(pathImg);
+                imgDetail.setImageBitmap(image);
             }
         }
     }
@@ -168,7 +201,11 @@ public class DetailToDoActivity extends AppCompatActivity {
 
         dbHelper.updateCheckedItemTodo(todo.getNumID(), cbx.isChecked(), nameItem.getText().toString());
 
-        updateList();
+        if(modeEdit){
+            updateListEdit();
+        } else {
+            updateList();
+        }
     }
 
     // Méthode qui permet la modification du titre
@@ -295,6 +332,12 @@ public class DetailToDoActivity extends AppCompatActivity {
         alert.show();
     }
 
+    // Méthode qui ouvre la gallerie
+    public void onClickEditImage(View v){
+        Intent itnGallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(itnGallery, RES_GALLERY);
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public void onClickBtnColor(View v){
         switch (v.getId()) {
@@ -403,7 +446,10 @@ public class DetailToDoActivity extends AppCompatActivity {
 
         // Met en place la couleur de fond
         getWindow().getDecorView().setBackgroundColor(getResources().getColor(todo.getBgColor()));
-        //btnBgColor.setBackground(getWindow().getDecorView().getBackground());
+
+        // Met en place l'image lié à la tâche
+        Bitmap image = BitmapFactory.decodeFile(todo.getImgPath());
+        imgDetail.setImageBitmap(image);
     }
 
     // Méthode qui permet de cacher le mode édition
@@ -411,6 +457,7 @@ public class DetailToDoActivity extends AppCompatActivity {
         // Cache les éléments pour modifier la tâche
         editTitle.setVisibility(View.INVISIBLE);
         editDate.setVisibility(View.INVISIBLE);
+        editImg.setVisibility(View.INVISIBLE);
         updateList();
     }
 
@@ -418,6 +465,7 @@ public class DetailToDoActivity extends AppCompatActivity {
     private void showEdit(){
         editTitle.setVisibility(View.VISIBLE);
         editDate.setVisibility(View.VISIBLE);
+        editImg.setVisibility(View.VISIBLE);
         updateListEdit();
     }
 }

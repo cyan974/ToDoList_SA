@@ -28,7 +28,6 @@ public class DbHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + Const.TodoEntry.TABLE_NAME + " (" +
                     Const.TodoEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     Const.TodoEntry.COL_TITLE + " TEXT NOT NULL UNIQUE," +
-                    Const.TodoEntry.COL_FK_TAG + " INTEGER," +
                     Const.TodoEntry.COL_ENDDATE + " DATE," +
                     Const.TodoEntry.COL_IMG + " TEXT," +
                     Const.TodoEntry.COL_BGCOLOR + " INTEGER " +
@@ -102,16 +101,32 @@ public class DbHelper extends SQLiteOpenHelper {
 
     // Méthode pour ajouter des tâches dans la table ToDo
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public Boolean addToDo(String title, LocalDate endDate, Integer bgColor){
+    public Boolean addToDo(ToDo todo){
         db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(Const.TodoEntry.COL_TITLE, title);
-        values.put(Const.TodoEntry.COL_FK_TAG, 0);
-        values.put(Const.TodoEntry.COL_ENDDATE, endDate.toString());
-        values.put(Const.TodoEntry.COL_BGCOLOR, bgColor);
+        values.put(Const.TodoEntry.COL_TITLE, todo.getTitle());
+        values.put(Const.TodoEntry.COL_ENDDATE, todo.getEndDate().toString());
+        values.put(Const.TodoEntry.COL_BGCOLOR, todo.getBgColor());
+        values.put(Const.TodoEntry.COL_IMG, todo.getImgPath());
 
+        // insert la tâche dans la BDD
         Long res = db.insert(Const.TodoEntry.TABLE_NAME, null, values);
+
+        // Récupère la tâche créée pour avoir l'ID
+        ToDo toDo = searchTodoByTitle(todo.getTitle());
+
+        // Insère les items (la liste des tâches à faire) dans la BDD
+        if(todo.getListItems().size() > 0){
+            for(ToDoItem item:todo.getListItems()){
+                addToDoItem(toDo.getNumID(), item.getName());
+            }
+        }
+
+        // Lie les tags (libellés) avec la liste de tâche
+        for(Tag tag:todo.getListTags()){
+            addTag_Todo(tag.getNumID(), toDo.getNumID());
+        }
 
         db.close();
         return res!=-1L;
@@ -203,9 +218,9 @@ public class DbHelper extends SQLiteOpenHelper {
             db.close();
             ToDo toDo = new ToDo(
                     queryRes.getLong(queryRes.getColumnIndex(Const.TodoEntry._ID)),
-                    queryRes.getLong(queryRes.getColumnIndex(Const.TodoEntry.COL_FK_TAG)),
                     queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_TITLE)),
                     LocalDate.parse(queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_ENDDATE))),
+                    queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_IMG)),
                     queryRes.getInt(queryRes.getColumnIndex(Const.TodoEntry.COL_BGCOLOR))
                     );
 
@@ -231,9 +246,9 @@ public class DbHelper extends SQLiteOpenHelper {
             db.close();
             return new ToDo(
                     queryRes.getLong(queryRes.getColumnIndex(Const.TodoEntry._ID)),
-                    queryRes.getLong(queryRes.getColumnIndex(Const.TodoEntry.COL_FK_TAG)),
                     queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_TITLE)),
                     LocalDate.parse(queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_ENDDATE))),
+                    queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_IMG)),
                     queryRes.getInt(queryRes.getColumnIndex(Const.TodoEntry.COL_BGCOLOR))
             );
         } else {
@@ -312,9 +327,9 @@ public class DbHelper extends SQLiteOpenHelper {
             do{
                 ToDo toDo = new ToDo(
                         queryRes.getLong(queryRes.getColumnIndex(Const.TodoEntry._ID)),
-                        queryRes.getLong(queryRes.getColumnIndex(Const.TodoEntry.COL_FK_TAG)),
                         queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_TITLE)),
                         LocalDate.parse(queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_ENDDATE))),
+                        queryRes.getString(queryRes.getColumnIndex(Const.TodoEntry.COL_IMG)),
                         queryRes.getInt(queryRes.getColumnIndex(Const.TodoEntry.COL_BGCOLOR))
                 );
 
@@ -479,6 +494,24 @@ public class DbHelper extends SQLiteOpenHelper {
 
         db.close();
     }
+
+    // Met a jour le lien qui permet d'accéder à l'image pour une tâche
+    public void updateImageTodo(Long idTodo, String pathImg){
+        db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(Const.TodoEntry.COL_IMG, pathImg);
+
+        db.update(Const.TodoEntry.TABLE_NAME, values,
+                Const.TodoEntry._ID + " = ?",
+                new String[]{idTodo.toString()});
+
+        db.close();
+    }
+
+    /*private ToDo returnTodoWithCursor(Cursor queryRes){
+
+    }*/
 
     /*@RequiresApi(api = Build.VERSION_CODES.O)
     public void insertFakeData(){

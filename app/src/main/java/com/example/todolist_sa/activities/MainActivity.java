@@ -1,4 +1,4 @@
-package com.example.todolist_sa.activity;
+package com.example.todolist_sa.activities;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import com.example.todolist_sa.DTO.ToDo;
 import com.example.todolist_sa.R;
-import com.example.todolist_sa.adapter.AdapterToDo;
+import com.example.todolist_sa.adapters.AdapterToDo;
 import com.example.todolist_sa.sqlite.DbHelper;
 
 import java.util.ArrayList;

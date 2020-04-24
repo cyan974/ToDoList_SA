@@ -10,8 +10,8 @@ import java.util.List;
 public class ToDo implements Serializable {
     private Long numID;
     private String title;
-    private Long tagID;
     private LocalDate endDate;
+    private String imgPath;
     private Integer bgColor;
     private ArrayList<ToDoItem> listItems;
     private ArrayList<Tag> listTags;
@@ -19,18 +19,18 @@ public class ToDo implements Serializable {
     public ToDo(){
         this.numID = null;
         this.title = null;
-        this.tagID = null;
         this.endDate = null;
+        this.imgPath = null;
         this.bgColor = R.color.colorWhite;
         this.listItems = new ArrayList<>();
         this.listTags = new ArrayList<>();
     }
 
-    public ToDo(Long numID, Long tag, String title, LocalDate endDate, Integer bgColor) {
+    public ToDo(Long numID, String title, LocalDate endDate, String imgPath, Integer bgColor) {
         this.numID = numID;
         this.title = title;
-        this.tagID = tag;
         this.endDate = endDate;
+        this.imgPath = imgPath;
         this.bgColor = bgColor;
         this.listItems = new ArrayList<>();
         this.listTags = new ArrayList<>();
@@ -56,8 +56,6 @@ public class ToDo implements Serializable {
         return this.title;
     }
 
-    public Long getTag(){return this.tagID;}
-
     public LocalDate getEndDate() {
         return this.endDate;
     }
@@ -78,10 +76,6 @@ public class ToDo implements Serializable {
         this.title = title;
     }
 
-    public void setTagID(Long tagID) {
-        this.tagID = tagID;
-    }
-
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
@@ -94,15 +88,19 @@ public class ToDo implements Serializable {
         this.listTags = listTags;
     }
 
-    public Long getTagID() {
-        return tagID;
-    }
-
     public Integer getBgColor() {
         return bgColor;
     }
 
     public void setBgColor(Integer bgColor) {
         this.bgColor = bgColor;
+    }
+
+    public String getImgPath() {
+        return imgPath;
+    }
+
+    public void setImgPath(String imgPath) {
+        this.imgPath = imgPath;
     }
 }

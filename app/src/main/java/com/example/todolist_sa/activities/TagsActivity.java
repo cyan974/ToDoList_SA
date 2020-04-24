@@ -1,4 +1,4 @@
-package com.example.todolist_sa.activity;
+package com.example.todolist_sa.activities;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

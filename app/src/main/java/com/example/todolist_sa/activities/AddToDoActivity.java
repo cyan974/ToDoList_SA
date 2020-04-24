@@ -1,12 +1,11 @@
-package com.example.todolist_sa.activity;
+package com.example.todolist_sa.activities;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -24,13 +23,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import com.example.todolist_sa.DTO.Tag;
@@ -51,6 +49,7 @@ public class AddToDoActivity extends AppCompatActivity {
     // Constantes
     private static final Integer RES_CHOOSE_TAG = 1;
     private static final Integer RES_TAKE_PICTURE = 2;
+    private static final Integer RES_GALLERY = 3;
 
     // Propriétés
     private DbHelper dbHelper;
@@ -72,8 +71,6 @@ public class AddToDoActivity extends AppCompatActivity {
 
     private ToDo todo;
 
-    private String photoPath = null;
-
     @Override
     protected void onCreate(Bundle savedInstanceState){
         setTheme(R.style.AppTheme);
@@ -88,7 +85,7 @@ public class AddToDoActivity extends AppCompatActivity {
         // Objet qui va permettre de garder toutes les informations avant d'etre enregistré dans la BDD
         todo = new ToDo();
 
-        // Récupération des éléments présents dans l'activité
+        // Liens avec les objets graphiques
         edtTitre = findViewById(R.id.edtTitre);
         txtDate = findViewById(R.id.txtDate);
         edtElement = findViewById(R.id.edtElement);
@@ -96,11 +93,11 @@ public class AddToDoActivity extends AppCompatActivity {
         lblLibelle = findViewById(R.id.lblLibelle);
         btnColor = findViewById(R.id.btnColor);
         imgTodo = findViewById(R.id.imgTodo);
+        lvItem = findViewById(R.id.listItem);
 
         lblLibelle.setVisibility(View.INVISIBLE);
 
         // Gestion de l'affichage pour la ListView
-        lvItem = findViewById(R.id.listItem);
         listItems = new ArrayList<>();
         mAdapter = new ArrayAdapter(this, R.layout.list_item_add_todo, R.id.txtElement, listItems);
         lvItem.setAdapter(mAdapter);
@@ -128,6 +125,10 @@ public class AddToDoActivity extends AppCompatActivity {
             case R.id.action_photo:
                 onClickTakePicture();
                 return true;
+
+            case R.id.action_gallery:
+                onClickGallery();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -147,10 +148,34 @@ public class AddToDoActivity extends AppCompatActivity {
         // Retour de l'appel de l'appareil photo
         if(requestCode == RES_TAKE_PICTURE && resultCode == RESULT_OK){
             // Récupérer l'image
-            /*Bundle extras = data.getExtras();
+            Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             //Bitmap image = BitmapFactory.decodeFile(photoPath);
-            imgTodo.setImageBitmap(imageBitmap);*/
+            imgTodo.setImageBitmap(imageBitmap);
+        }
+
+        // Vérifie si une image est récupéré
+        if(requestCode == RES_GALLERY && resultCode == RESULT_OK){
+            // Accès à l'image à partir de data
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
+            // Curseur d'accès au chemin de l'image
+            Cursor cursor = this.getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+
+            // Position sur la première ligne (normalement une seule)
+            if(cursor.moveToFirst()){
+                // Récupération du chemin précis de l'image
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                todo.setImgPath(cursor.getString(columnIndex));
+                cursor.close();
+
+                // Récupération image + affichage
+                Bitmap image = BitmapFactory.decodeFile(todo.getImgPath());
+                imgTodo.setImageBitmap(image);
+            }
+
+        } else {
+            Toast.makeText(this, "Aucune image sélectionnée", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -211,16 +236,38 @@ public class AddToDoActivity extends AppCompatActivity {
         }
     }
 
+    // Méthode pour accéder à la gallerie du téléphone
+    public void onClickGallery(){
+        Intent itnGallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(itnGallery, RES_GALLERY);
+    }
+
     // Méthode pour accéder à l'appareil photo et prendre une photo et mémorise dans un fichier temporaire
     public void onClickTakePicture() {
-        /*Intent itnPicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        Intent itnPicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         // test pour contrôler que l'intent peut être créé
         if(itnPicture.resolveActivity(getPackageManager()) != null){
-            startActivityForResult(itnPicture, RES_TAKE_PICTURE);
+            //startActivityForResult(itnPicture, RES_TAKE_PICTURE);
+
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.example.android.fileprovider",
+                        photoFile);
+                itnPicture.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(itnPicture, RES_TAKE_PICTURE);
+            }
 
             // Crée un nom de fichier unique
-            String time = new SimpleDateFormat("yyyyMMdd HHmmss").format(new Date());
+            /*String time = new SimpleDateFormat("yyyyMMdd HHmmss").format(new Date());
             File photoDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 
             try {
@@ -241,10 +288,25 @@ public class AddToDoActivity extends AppCompatActivity {
                 startActivityForResult(itnPicture, RES_TAKE_PICTURE);
             } catch (IOException e){
                 e.printStackTrace();
-            }
+            }*/
 
-        }*/
+        }
+    }
 
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        todo.setImgPath(image.getAbsolutePath());
+        return image;
     }
 
     // Méthode onClick pour l'ajout d'une date via l'interface d'un calendrier
@@ -386,28 +448,14 @@ public class AddToDoActivity extends AppCompatActivity {
     // Action du bouton flottant qui ajoute la liste de tâche avec ses différents éléments (qui crée l'objet ToDo dans la BDD)
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void onClickAdd(View v){
+        // Sauvegarder toutes les infos présente sur la vue dans un objet ToDo
         saveInfo();
+
+        // Vérifie que le titre et la date ont été saisie, sinon ne permet pas d'enregistrer une tâche
         if(todo.getTitle() != null && todo.getEndDate() != null){
-            if(dbHelper.addToDo(todo.getTitle(), todo.getEndDate(), todo.getBgColor())){
+            dbHelper.addToDo(todo);
 
-                // Récupère la tâche créée pour avoir l'ID
-                ToDo toDo = dbHelper.searchTodoByTitle(todo.getTitle());
-
-                // Insère les items (la liste des tâches à faire) dans la BDD
-                if(todo.getListItems().size() > 0){
-                    for(ToDoItem item:todo.getListItems()){
-                        Boolean res = dbHelper.addToDoItem(toDo.getNumID(), item.getName());
-                    }
-                }
-
-                // Lie les tags (libellés) avec la liste de tâche
-                for(Tag tag:todo.getListTags()){
-                    Boolean res = dbHelper.addTag_Todo(tag.getNumID(), toDo.getNumID());
-                }
-            } else {
-                // Afficher une erreur lors de l'ajout si nécessaire
-            }
-
+            // Ferme l'activité
             finish();
         } else {
             AlertDialog alert = new AlertDialog.Builder(AddToDoActivity.this).create();
