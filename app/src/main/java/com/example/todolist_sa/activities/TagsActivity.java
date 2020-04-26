@@ -10,7 +10,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.todolist_sa.DTO.Tag;
@@ -37,9 +36,8 @@ public class TagsActivity extends AppCompatActivity {
 
         dbHelper = new DbHelper(this);
 
-        // ActionBar - modifier le titre de la vue
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Gestion des libellés");
+        // Affiche le titre de l'activité
+        setTitle("Gestion des libellés");
 
         edtTag = findViewById(R.id.edtTag);
         lvTags = findViewById(R.id.listTags);
@@ -48,6 +46,7 @@ public class TagsActivity extends AppCompatActivity {
         updateList();
     }
 
+    // Méthode qui ajoute un tag
     public void onClickAddTag(View v){
         String strTag = edtTag.getText().toString();
         if(strTag.length() > 0){
@@ -59,6 +58,7 @@ public class TagsActivity extends AppCompatActivity {
         }
     }
 
+    // Méthode qui supprime un tag
     public void onClickDeleteTag(View v){
         View parent = (View) v.getParent();
         TextView ele = parent.findViewById(R.id.txtTag);
@@ -67,6 +67,7 @@ public class TagsActivity extends AppCompatActivity {
         updateList();
     }
 
+    // Méthode qui modifie un tag
     public void onClickEditTag(View v){
         View parent = (View) v.getParent();
         TextView ele = parent.findViewById(R.id.txtTag);
@@ -75,6 +76,7 @@ public class TagsActivity extends AppCompatActivity {
         final EditText input = new EditText(TagsActivity.this);
         input.setText(oldTag);
 
+        // Affiche un AlertDialog qui permet de modifier le nom du tag
         AlertDialog alert = new AlertDialog.Builder(TagsActivity.this).create();
         alert.setTitle("Modification du libellé");
         alert.setIcon(R.drawable.logo);
@@ -84,6 +86,7 @@ public class TagsActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 String newTag = input.getText().toString();
 
+                // Modifie seulement si le nouveau nom n'est pas égal à l'ancien nom
                 if(!oldTag.equals(newTag)){
                     dbHelper.updateNameTag(oldTag, newTag);
                     updateList();
@@ -100,6 +103,7 @@ public class TagsActivity extends AppCompatActivity {
         alert.show();
     }
 
+    // Méthode qui permet de mettre à jour la liste des tags
     public void updateList(){
         if (mAdapter != null) {
             listTags.clear();
@@ -113,5 +117,4 @@ public class TagsActivity extends AppCompatActivity {
         mAdapter = new ArrayAdapter(this, R.layout.list_tags, R.id.txtTag, listTags);
         lvTags.setAdapter(mAdapter);
     }
-
 }

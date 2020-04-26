@@ -542,33 +542,4 @@ public class DbHelper extends SQLiteOpenHelper {
 
         db.close();
     }
-
-    /*private ToDo returnTodoWithCursor(Cursor queryRes){
-
-    }*/
-
-    /*@RequiresApi(api = Build.VERSION_CODES.O)
-    public void insertFakeData(){
-
-        // Tâches
-        addToDo("Tache 1", LocalDate.of(1997,02,27));
-        addToDo("Tache 2", LocalDate.of(1997,02,27));
-        addToDo("Tache 3", LocalDate.of(1997,02,27));
-        addToDo("Tache 4", LocalDate.of(1997,02,27));
-
-
-        // Éléments des tâches
-        addToDoItem(1L, "Element 1");
-        addToDoItem(2L, "Element 2");
-        addToDoItem(3L, "Element 3");
-        addToDoItem(4L, "Element 4");
-
-
-        // Tags
-        addTag("HEG");
-        addTag("HES");
-        addTag("Maison");
-        addTag("Enfant");
-
-    }*/
 }

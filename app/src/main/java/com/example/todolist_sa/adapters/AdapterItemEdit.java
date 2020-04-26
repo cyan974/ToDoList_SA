@@ -28,19 +28,20 @@ public class AdapterItemEdit extends ArrayAdapter<ToDoItem> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        // Get the data item for this position
+        // On récupère l'objet itemTodo (élément de la liste) par rapport à la position (qui commence de 0)
         ToDoItem itemTodo = getItem(position);
 
+        // Affiche la liste des items en mode édition (avec les boutons d'étidion en plus)
         if(convertView == null){
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_detail_edit, parent, false);
         }
 
         TextView name = convertView.findViewById(R.id.txtItem);
         CheckBox checkBox = convertView.findViewById(R.id.cbxChecked);
-        ImageView editItem = convertView.findViewById(R.id.editItem);
 
         name.setText(itemTodo.getName());
 
+        // Selon si l'élément a été effectué ou pas, met la checkbox a checked ot not
         if(itemTodo.getCompleted()){
             checkBox.setChecked(true);
         } else {

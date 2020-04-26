@@ -1,6 +1,5 @@
 package com.example.todolist_sa.activities;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -10,13 +9,11 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 
 import com.example.todolist_sa.R;
 
 public class AlarmReceiver extends BroadcastReceiver {
     private static final String PRIMARY_CHANNEL_ID = "primary_channel_id";
-
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override

@@ -35,7 +35,7 @@ public class AdapterToDo extends ArrayAdapter<ToDo> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        // Get the data item for this position
+        // On récupère l'objet ToDo par rapport à la position (qui commence de 0)
         ToDo toDo = getItem(position);
 
         if(convertView == null){

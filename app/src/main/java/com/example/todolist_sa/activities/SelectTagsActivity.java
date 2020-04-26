@@ -43,6 +43,7 @@ public class SelectTagsActivity extends AppCompatActivity {
         Intent itn = getIntent();
         listTagsAdd = (ArrayList<Tag>) itn.getSerializableExtra("LIST_TAGS");
         todo = (ToDo) itn.getSerializableExtra("TODO");
+        // Permet de savoir depuis quelle activité cet activité a été appelé
         iActivity = itn.getIntExtra("Activity", 0);
 
         listTags = new ArrayList<>();
@@ -54,6 +55,7 @@ public class SelectTagsActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
+            // Clique sur le retour
             case android.R.id.home:
                 onBackPressed();
                 return true;
@@ -65,14 +67,18 @@ public class SelectTagsActivity extends AppCompatActivity {
 
     // Méhtode qui permet d'initialiser la liste au départ avec les tags qui sont deja présent dans la liste ou non
     private void initializeList(){
+        // Compare la liste des libellés de la BDD avec la liste des libellés sélectionnés pour la tâche
+        // Permet d'activer les checkbox pour les libellés qui sont présent dans la liste de la tâche
         for(Tag tagList:dbHelper.getListTag()){
             for(Tag tagTodo:todo.getListTags()){
+                // Si le libellé de la BDD est égal a celui de la tâche, on le met dans l'état sélectioné et on ajoute dans la liste
                 if(tagList.getNumID().equals(tagTodo.getNumID())){
                     tagList.setSelected(true);
                     listTags.add(tagList);
                     break;
                 }
             }
+            // Si le libellé n'est pas dans l'état sélectionné, on ajoute dans la liste
             if(!tagList.getSelected()){
                 listTags.add(tagList);
             }
@@ -113,6 +119,8 @@ public class SelectTagsActivity extends AppCompatActivity {
         }
     }
 
+    // Méthode qui se déclenche lorsqu'on appuie sur la touche retour
+    // Permet de passer l'objet todo (qui contient toutes les infos)
     @Override
     public void onBackPressed() {
         Intent intent = new Intent();
