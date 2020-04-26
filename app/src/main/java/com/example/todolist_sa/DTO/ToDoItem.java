@@ -41,4 +41,16 @@ public class ToDoItem implements Serializable {
     public void setCompleted(Boolean completed) {
         isCompleted = completed;
     }
+
+    public void setNumID(Long numID) {
+        this.numID = numID;
+    }
+
+    public void setIdToDo(Long idToDo) {
+        this.idToDo = idToDo;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

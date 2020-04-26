@@ -2,9 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.todolist_sa">
 
-    <uses-feature android:name="android.hardware.camera"
-        android:required="true" />
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -14,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".activity.MainActivity"
+        <activity android:name=".activities.MainActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,24 +20,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.AddToDoActivity"
-            android:parentActivityName=".activity.MainActivity"/>
-        <activity android:name=".activity.DetailToDoActivity"
-            android:parentActivityName=".activity.MainActivity"/>
-        <activity android:name=".activity.TagsActivity"
-            android:parentActivityName=".activity.MainActivity"/>
-        <activity android:name=".activity.SelectTagsActivity"
-            android:parentActivityName=".activity.AddToDoActivity"/>
+        <activity android:name=".activities.AddToDoActivity"
+            android:parentActivityName=".activities.MainActivity"/>
+        <activity android:name=".activities.DetailToDoActivity"
+            android:parentActivityName=".activities.MainActivity"/>
+        <activity android:name=".activities.TagsActivity"
+            android:parentActivityName=".activities.MainActivity"/>
+        <activity android:name=".activities.SelectTagsActivity"
+            android:parentActivityName=".activities.AddToDoActivity"/>
 
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="com.example.android.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
-        </provider>
+        <receiver android:name=".activities.AlarmReceiver"/>
 
     </application>
 </manifest>

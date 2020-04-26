@@ -1,4 +1,4 @@
-package com.example.todolist_sa.activity;
+package com.example.todolist_sa.activities;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import com.example.todolist_sa.DTO.ToDo;
 import com.example.todolist_sa.R;
-import com.example.todolist_sa.adapter.AdapterToDo;
+import com.example.todolist_sa.adapters.AdapterToDo;
 import com.example.todolist_sa.sqlite.DbHelper;
 
 import java.util.ArrayList;
@@ -57,13 +57,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        // Cela ajoute des éléments à la barre d'action si elle est présente.
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            // Permet d'ouvrir une activité pour gérer tous les libellés
             case R.id.action_libelle:
                 Intent itnLibelle = new Intent(MainActivity.this, TagsActivity.class);
                 startActivity(itnLibelle);
@@ -72,13 +73,13 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // Méthode qui appelle une vue pour créer une tâche
+    // Méthode qui appelle une activité pour créer une tâche
     public void onClickAddTask(View v){
         Intent itnAddTask = new Intent(MainActivity.this, AddToDoActivity.class);
         startActivity(itnAddTask);
     }
 
-    // Méthode qui appelle une vue pour visualiser les informations d'une tâche
+    // Méthode qui appelle une activité pour visualiser les informations d'une tâche
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void onClickDetailTask(View v){
         TextView title = v.findViewById(R.id.txtTitle);

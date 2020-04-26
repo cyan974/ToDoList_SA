@@ -1,19 +1,16 @@
-package com.example.todolist_sa.adapter;
+package com.example.todolist_sa.adapters;
 
 import android.content.Context;
-import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.todolist_sa.DTO.ToDo;
 import com.example.todolist_sa.DTO.ToDoItem;
 import com.example.todolist_sa.R;
 
@@ -30,9 +27,10 @@ public class AdapterItem extends ArrayAdapter<ToDoItem> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        // Get the data item for this position
+        // On récupère l'objet itemTodo (élément de la liste) par rapport à la position (qui commence de 0)
         ToDoItem itemTodo = getItem(position);
 
+        // Affiche la liste des items en mode normal
         if(convertView == null){
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_detail, parent, false);
         }
@@ -42,9 +40,9 @@ public class AdapterItem extends ArrayAdapter<ToDoItem> {
 
         name.setText(itemTodo.getName());
 
+        // Selon si l'élément a été effectué ou pas, met la checkbox a checked ot not
         if(itemTodo.getCompleted()){
             checkBox.setChecked(true);
-            //name.setPaintFlags(name.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         } else {
             checkBox.setChecked(false);
         }

@@ -1,16 +1,22 @@
-package com.example.todolist_sa.activity;
+package com.example.todolist_sa.activities;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -18,16 +24,18 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.example.todolist_sa.DTO.Tag;
 import com.example.todolist_sa.DTO.ToDo;
 import com.example.todolist_sa.DTO.ToDoItem;
 import com.example.todolist_sa.R;
-import com.example.todolist_sa.adapter.AdapterItem;
-import com.example.todolist_sa.adapter.AdapterItemEdit;
+import com.example.todolist_sa.adapters.AdapterItem;
+import com.example.todolist_sa.adapters.AdapterItemEdit;
 import com.example.todolist_sa.sqlite.DbHelper;
 
 import java.time.LocalDate;
@@ -35,6 +43,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 public class DetailToDoActivity extends AppCompatActivity {
+    // Constantes
+    private static final Integer RES_GALLERY = 1;
+    private static final Integer RES_PERMISSION = 2;
+
     private DbHelper dbHelper;
     private DatePickerDialog datePickerDialog;
     private ToDo todo;
@@ -51,9 +63,10 @@ public class DetailToDoActivity extends AppCompatActivity {
 
     private ImageView editTitle;
     private ImageView editDate;
+    private ImageView editImg;
+    private ImageView imgDetail;
 
     // Variables pour les couleurs
-    private Button btnBgColor;
     private Integer iBgColor;
 
     private EditText edtElement;
@@ -75,7 +88,7 @@ public class DetailToDoActivity extends AppCompatActivity {
         dbHelper = new DbHelper(this);
         listItems = new ArrayList<>();
 
-        // Récupération des éléments présents dans l'activité
+        // Liens avec les différents objets graphiques
         txtTitle = findViewById(R.id.txtTitle);
         txtDate = findViewById(R.id.txtDate);
         lvItem = findViewById(R.id.listTodo);
@@ -83,8 +96,9 @@ public class DetailToDoActivity extends AppCompatActivity {
         editDate = findViewById(R.id.editDate);
         txtTags = findViewById(R.id.txtTags);
         lblTag = findViewById(R.id.lblTags);
-        btnBgColor = findViewById(R.id.btnColor);
         edtElement = findViewById(R.id.edtElement);
+        imgDetail = findViewById(R.id.imgDetail);
+        editImg = findViewById(R.id.editImg);
 
         // Récupération de l'objet pour afficher les détails
         Intent itn = getIntent();
@@ -99,7 +113,7 @@ public class DetailToDoActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        // Cela ajoute des éléments à la barre d'action si elle est présente.
         getMenuInflater().inflate(R.menu.detail_todo_menu, menu);
         return true;
     }
@@ -132,11 +146,6 @@ public class DetailToDoActivity extends AppCompatActivity {
                 dbHelper.deleteToDoById(todo.getNumID());
                 finish();
                 return true;
-
-                // Action lorsque qu'on appuie sur la touche retour dans la barre
-            case R.id.home:
-                onBackPressed();
-                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -147,17 +156,42 @@ public class DetailToDoActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         // Récupération des informations de l'activité pour les libellés
-        if(requestCode == 0){
-            if(resultCode == RESULT_OK){
-                todo = (ToDo) data.getSerializableExtra("TODO");
-                setupInfos();
+        if (requestCode == 0 && resultCode == RESULT_OK) {
+            todo = (ToDo) data.getSerializableExtra("TODO");
+            setupInfos();
+        }
+
+        // Retour de l'appel de la gallerie
+        if (requestCode == RES_GALLERY && resultCode == RESULT_OK) {
+            // Accès à l'image à partir de data
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
+            // Curseur d'accès au chemin de l'image
+            Cursor cursor = this.getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+
+            // Position sur la première ligne (normalement une seule)
+            if (cursor.moveToFirst()) {
+                // Récupération du chemin précis de l'image
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                String pathImg = cursor.getString(columnIndex);
+                dbHelper.updateImageTodo(todo.getNumID(), pathImg);
+                cursor.close();
+
+                // Récupération image + affichage
+                Bitmap image = BitmapFactory.decodeFile(pathImg);
+                imgDetail.setImageBitmap(image);
             }
         }
     }
 
+    // Méthode déclenché au retour de l'appel des demandes de persmissions
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        // Si on a la permission pour accéder à la gallerie est donné, alors on ouvre la gallerie pour récupérer une image
+        if(requestCode == RES_PERMISSION && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+            openGallery();
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     // Méthode qui met a jour si la tâche dans la liste a été effectué ou non et met à jour l'affichage des CheckBox (checked or not)
@@ -168,7 +202,12 @@ public class DetailToDoActivity extends AppCompatActivity {
 
         dbHelper.updateCheckedItemTodo(todo.getNumID(), cbx.isChecked(), nameItem.getText().toString());
 
-        updateList();
+        // Selon le mode, met à jour la liste de manière différente
+        if(modeEdit){
+            updateListEdit();
+        } else {
+            updateList();
+        }
     }
 
     // Méthode qui permet la modification du titre
@@ -177,6 +216,7 @@ public class DetailToDoActivity extends AppCompatActivity {
         final EditText input = new EditText(DetailToDoActivity.this);
         input.setText(oldTitle);
 
+        // Affiche un AlertDialog qui permet de modifier le titre
         AlertDialog alert = new AlertDialog.Builder(DetailToDoActivity.this).create();
         alert.setTitle("Modification du titre");
         alert.setIcon(R.drawable.logo);
@@ -186,6 +226,7 @@ public class DetailToDoActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 String newTitle = input.getText().toString();
 
+                // Modifie le titre seulement si le nouveau titre est différent de l'ancien
                 if(!oldTitle.equals(newTitle)){
                     dbHelper.updateTitleTodo(oldTitle, newTitle);
                     txtTitle.setText(newTitle);
@@ -204,12 +245,13 @@ public class DetailToDoActivity extends AppCompatActivity {
 
     // Méthode qui permet la modification de la date
     public void onClickEditEndDate(View v){
-        // calender class's instance and get current date , month and year from calender
+        // Obitens la date, le mois et l'année actuels du calendrier
         final Calendar c = Calendar.getInstance();
-        int mYear = c.get(Calendar.YEAR); // current year
-        int mMonth = c.get(Calendar.MONTH); // current month
-        int mDay = c.get(Calendar.DAY_OF_MONTH); // current day
-        // date picker dialog
+        int mYear = c.get(Calendar.YEAR); // année actuelle
+        int mMonth = c.get(Calendar.MONTH); // mois actuel
+        int mDay = c.get(Calendar.DAY_OF_MONTH); // jour actuel
+
+        // Date picker dialog, qui permet de choisir une date
         datePickerDialog = new DatePickerDialog(DetailToDoActivity.this,
                 new DatePickerDialog.OnDateSetListener() {
 
@@ -218,9 +260,10 @@ public class DetailToDoActivity extends AppCompatActivity {
                     public void onDateSet(DatePicker view, int year,
                                           int monthOfYear, int dayOfMonth) {
 
-                        // set day of month , month and year value in the edit text
+                        // Récupère la date dans une variable
                         LocalDate endDate = LocalDate.of(year,monthOfYear+1,dayOfMonth);
 
+                        // Modifie la date seulement si la nouvelle date est différente de l'ancienne
                         if(!txtDate.getText().toString().equals(endDate.toString())){
                             dbHelper.updateEndDateTodo(endDate, todo.getNumID());
                             txtDate.setText(year + "-" + (monthOfYear+1) + "-" + dayOfMonth);
@@ -240,6 +283,7 @@ public class DetailToDoActivity extends AppCompatActivity {
         final EditText input = new EditText(DetailToDoActivity.this);
         input.setText(oldName);
 
+        // Affiche un AlertDialog qui permet de modifier le nom d'un élément
         AlertDialog alert = new AlertDialog.Builder(DetailToDoActivity.this).create();
         alert.setTitle("Modification d'un élément");
         alert.setIcon(R.drawable.logo);
@@ -249,6 +293,7 @@ public class DetailToDoActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 String newName = input.getText().toString();
 
+                // modifie seulement si le nouveau nom est différent de l'ancien
                 if(!oldName.equals(newName)){
                     dbHelper.updateNameItemTodo(oldName, newName, todo.getNumID());
                     updateListEdit();
@@ -268,6 +313,8 @@ public class DetailToDoActivity extends AppCompatActivity {
     // Méthode qui ouvre un AlertDialog pour choisir la couleur
     public void onClickEditColor(View v){
         final View colorLayout = getLayoutInflater().inflate(R.layout.list_color_detail, null);
+
+        // Affiche AlertDialog qui permet de choisir une couleur grâce à une vue
         AlertDialog alert = new AlertDialog.Builder(DetailToDoActivity.this).create();
         alert.setTitle("Modifer la couleur de fond");
         alert.setIcon(R.drawable.logo);
@@ -280,6 +327,7 @@ public class DetailToDoActivity extends AppCompatActivity {
             }
         });
 
+        // Permet de remettre la couleur par défaut pour le fond (le blanc)
         alert.setButton(Dialog.BUTTON_NEGATIVE,"Réinitialiser",new DialogInterface.OnClickListener(){
 
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -295,6 +343,25 @@ public class DetailToDoActivity extends AppCompatActivity {
         alert.show();
     }
 
+    // Méthode lorsqu'on clique pour ouvre la gallerie
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void onClickEditImage(){
+        // Si la persmission pour accéder à la gallerie n'est pas donné, effectue une demande de permission pour y accéder
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+            requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, RES_PERMISSION);
+        } else {
+            // Ouvre la gallerie
+            openGallery();
+        }
+    }
+
+    // Méthode pour accéder à la gallerie du téléphone
+    public void openGallery(){
+        Intent itnGallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(itnGallery, RES_GALLERY);
+    }
+
+    // Méthode qui choisit la couleur du background en fonction du bouton surlequel on a cliqué
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public void onClickBtnColor(View v){
         switch (v.getId()) {
@@ -338,6 +405,7 @@ public class DetailToDoActivity extends AppCompatActivity {
             dbHelper.addToDoItem(todo.getNumID(), edtElement.getText().toString());
             edtElement.getText().clear();
 
+            // Selon le mode, met à jour la liste des éléments
             if(modeEdit){
                 updateListEdit();
             } else {
@@ -346,7 +414,7 @@ public class DetailToDoActivity extends AppCompatActivity {
         }
     }
 
-    // Méthode qui permet la maj de la liste
+    // Méthode qui permet la maj de la liste (en mode normal)
     private void updateList(){
         if (adapterItem != null) {
             listItems.clear();
@@ -358,7 +426,7 @@ public class DetailToDoActivity extends AppCompatActivity {
         lvItem.setAdapter(adapterItem);
     }
 
-    // Méthode qui permet la maj de la liste
+    // Méthode qui permet la maj de la liste (en mode édition)
     private void updateListEdit(){
         if (adapterItemEdit != null) {
             listItems.clear();
@@ -403,7 +471,10 @@ public class DetailToDoActivity extends AppCompatActivity {
 
         // Met en place la couleur de fond
         getWindow().getDecorView().setBackgroundColor(getResources().getColor(todo.getBgColor()));
-        //btnBgColor.setBackground(getWindow().getDecorView().getBackground());
+
+        // Met en place l'image lié à la tâche
+        Bitmap image = BitmapFactory.decodeFile(todo.getImgPath());
+        imgDetail.setImageBitmap(image);
     }
 
     // Méthode qui permet de cacher le mode édition
@@ -411,6 +482,7 @@ public class DetailToDoActivity extends AppCompatActivity {
         // Cache les éléments pour modifier la tâche
         editTitle.setVisibility(View.INVISIBLE);
         editDate.setVisibility(View.INVISIBLE);
+        editImg.setVisibility(View.INVISIBLE);
         updateList();
     }
 
@@ -418,6 +490,7 @@ public class DetailToDoActivity extends AppCompatActivity {
     private void showEdit(){
         editTitle.setVisibility(View.VISIBLE);
         editDate.setVisibility(View.VISIBLE);
+        editImg.setVisibility(View.VISIBLE);
         updateListEdit();
     }
 }

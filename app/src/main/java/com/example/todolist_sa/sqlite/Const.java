@@ -11,9 +11,8 @@ public class Const {
     public class TodoEntry implements BaseColumns {
         public static final String TABLE_NAME = "todo";
         public static final String COL_TITLE = "title";
-        public static final String COL_FK_TAG = "fk_tags";
         public static final String COL_ENDDATE = "endDate";
-        public static final String COL_IMG = "img";
+        public static final String COL_IMG = "imgPath";
         public static final String COL_BGCOLOR = "color";
     }
 
