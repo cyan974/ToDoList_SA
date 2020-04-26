@@ -99,7 +99,7 @@ public class DbHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    // Méthode pour ajouter des tâches dans la table ToDo
+    // Ajoute une tâche dans la table ToDo
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Boolean addToDo(ToDo todo){
         db = this.getWritableDatabase();
@@ -132,7 +132,7 @@ public class DbHelper extends SQLiteOpenHelper {
         return res!=-1L;
     }
 
-    // Méthode pour ajouter des sous-tâches dans la table ToDoItem
+    // Ajoute des sous-tâches (élément de la liste) dans la table ToDoItem
     public Boolean addToDoItem(Long toDoId, String name){
         db = this.getWritableDatabase();
 
@@ -147,6 +147,7 @@ public class DbHelper extends SQLiteOpenHelper {
         return res!=-1L;
     }
 
+    // Ajoute un tag
     public Boolean addTag(String tag){
         db = this.getWritableDatabase();
 
@@ -159,6 +160,7 @@ public class DbHelper extends SQLiteOpenHelper {
         return res!=-1L;
     }
 
+    // Ajout un lien entre un tag et une tâche
     public Boolean addTag_Todo(Long idTag, Long idTodo){
         db = this.getWritableDatabase();
 
@@ -172,6 +174,7 @@ public class DbHelper extends SQLiteOpenHelper {
         return res!=-1L;
     }
 
+    // Recherche et retourne un tag par rapport à son nom
     public Tag searchTagByName(String name){
         db = this.getReadableDatabase();
 
@@ -190,6 +193,7 @@ public class DbHelper extends SQLiteOpenHelper {
         }
     }
 
+    // Recherche et retourne un tag par rapport à son ID
     public Tag searchTagById(Long idTag){
         db = this.getReadableDatabase();
 
@@ -208,6 +212,7 @@ public class DbHelper extends SQLiteOpenHelper {
         }
     }
 
+    // Recherche et retourne une tâche par rapport à son titre
     @RequiresApi(api = Build.VERSION_CODES.O)
     public ToDo searchTodoByTitle(String title){
         db = this.getReadableDatabase();
@@ -232,6 +237,21 @@ public class DbHelper extends SQLiteOpenHelper {
         } else {
             db.close();
             queryRes.close();
+            return null;
+        }
+    }
+
+    // Recherche et retourne l'ID d'une tâche par rapport à son titre
+    public Long searchTodoIDbyTitle(String title){
+        db = this.getReadableDatabase();
+
+        Cursor queryRes = db.rawQuery("SELECT * FROM " + Const.TodoEntry.TABLE_NAME + " WHERE " + Const.TodoEntry.COL_TITLE + " =?", new String[] { title });
+
+        if(queryRes.moveToFirst()){
+            db.close();
+            return queryRes.getLong(queryRes.getColumnIndex(Const.TodoEntry._ID));
+        } else {
+            db.close();
             return null;
         }
     }
@@ -266,6 +286,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    // Supprime une tâche
     public void deleteToDoById(Long id){
         db = this.getWritableDatabase();
 
@@ -281,6 +302,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    // Supprime un élément (présent dans la liste de tâche)
     public void deleteItemTodo(String itemName, Long idTodo){
         db = this.getWritableDatabase();
 
@@ -291,6 +313,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    // Supprime le lien entre un tag et une tâche
     public void deleteTag_Todo(Long idTag, Long idTodo){
         db = this.getWritableDatabase();
 
@@ -301,6 +324,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    // Supprime un tag
     public void deleteTag(Tag tag){
         db = this.getWritableDatabase();
 
@@ -316,6 +340,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    // Retourne toutes les tâches
     @RequiresApi(api = Build.VERSION_CODES.O)
     public ArrayList<ToDo> getListToDo(){
         ArrayList<ToDo> listRes = new ArrayList();
@@ -347,6 +372,7 @@ public class DbHelper extends SQLiteOpenHelper {
         return listRes;
     }
 
+    // Retourne la liste des éléments de la liste de tâche
     public ArrayList<ToDoItem> getListItemByTodo(Long idTodo){
         ArrayList<ToDoItem> listItems = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -372,6 +398,7 @@ public class DbHelper extends SQLiteOpenHelper {
         return listItems;
     }
 
+    // Retoune la liste complète des tags
     public ArrayList<Tag> getListTag(){
         ArrayList<Tag> listTags = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -392,6 +419,7 @@ public class DbHelper extends SQLiteOpenHelper {
         return listTags;
     }
 
+    // Retourne une liste des tags pour une tâche
     public ArrayList<Tag> getListTagByTodo(Long idTodo){
         ArrayList<Tag> listTags = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -411,6 +439,7 @@ public class DbHelper extends SQLiteOpenHelper {
         return listTags;
     }
 
+    // Met à jour l'état d'un élément de la list des tâches (si il a été effectué ou pas)
     public void updateCheckedItemTodo(Long id, Boolean checked, String nameItem){
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -430,7 +459,8 @@ public class DbHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void updateTag(String oldName, String newName){
+    // Met à jour le nom d'un tag (libellé)
+    public void updateNameTag(String oldName, String newName){
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -443,6 +473,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    // Met à jour le titre de la tâche
     public void updateTitleTodo(String oldTitle, String newTitle){
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -456,6 +487,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    // Met à jour la date de fin prévue pour la tâche
     public void updateEndDateTodo(LocalDate endDate, Long idTodo) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -469,6 +501,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    // Met à jour le nom d'un élément de la liste de tâche
     public void updateNameItemTodo(String oldName, String newName, Long idTodo){
         db = this.getWritableDatabase();
 
@@ -482,6 +515,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    // Met à jour la couleur de fond pour une tâche
     public void updateColorTodo(Long idTodo, Integer color){
         db = this.getWritableDatabase();
 

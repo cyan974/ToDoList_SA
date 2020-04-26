@@ -85,7 +85,7 @@ public class TagsActivity extends AppCompatActivity {
                 String newTag = input.getText().toString();
 
                 if(!oldTag.equals(newTag)){
-                    dbHelper.updateTag(oldTag, newTag);
+                    dbHelper.updateNameTag(oldTag, newTag);
                     updateList();
                 }
             }
